@@ -29,25 +29,6 @@ jobs:
           sudo systemctl restart ssh
           sudo systemctl enable ssh
 
-      - name: 3. Setup npm, PATH, and Environment Variables Persistently
-        env:
-          GH_TOKEN: ${{ secrets.MY_PAT }}
-        run: |
-          mkdir -p ~/.npm-global
-          npm config set prefix '~/.npm-global'
-
-          echo 'export PATH="$HOME/.npm-global/bin:$PATH"' >> ~/.bashrc
-          echo 'export PATH="$HOME/.npm-global/bin:$PATH"' >> ~/.profile
-          export PATH="$HOME/.npm-global/bin:$PATH"
-
-          echo "export GH_TOKEN=$GH_TOKEN" >> ~/.bashrc
-          echo "export GH_TOKEN=$GH_TOKEN" >> ~/.profile
-          echo "GH_TOKEN=$GH_TOKEN" | sudo tee -a /etc/environment
-
-          echo 'export INITIAL_PASSWORD="${{ secrets.RUNNER_PASSWORD }}"' >> ~/.bashrc
-          echo 'export INITIAL_PASSWORD="${{ secrets.RUNNER_PASSWORD }}"' >> ~/.profile
-          echo 'INITIAL_PASSWORD="${{ secrets.RUNNER_PASSWORD }}"' | sudo tee -a /etc/environment
-
       - name: 4. Connect Tailscale as Exit Node & Show Access Info
         env:
           TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
@@ -73,95 +54,6 @@ jobs:
           echo "  🌍 Exit Node: Enabled (advertise-exit-node)"
           echo "=================================================="
 
-      - name: 5. Authenticate gh CLI & configure git credential helper
-        env:
-          GH_TOKEN: ${{ secrets.MY_PAT }}
-        run: |
-          unset GH_TOKEN
-          echo "${{ secrets.MY_PAT }}" | gh auth login --with-token
-          gh auth setup-git
-          gh auth status
-          echo "✅ GitHub CLI authenticated as: $(gh api user -q .login)"
-
-      - name: 6. Clone my-tail Project
-        run: |
-          cd /home/runner
-          if [ ! -d my-tail ]; then
-            git clone https://github.com/Shabakebehdasht/my-tail.git
-          fi
-          cd my-tail
-          echo "✅ my-tail cloned successfully"
-
-      - name: 7. Install 9router globally and create symlink
-        run: |
-          npm install -g 9router
-          if [ -f ~/.npm-global/bin/9router ]; then
-            sudo ln -sf ~/.npm-global/bin/9router /usr/local/bin/9router
-            echo '✅ 9router installed and symlinked to /usr/local/bin/9router'
-          else
-            echo '⚠️ 9router binary not found after installation'
-          fi
-
-      - name: 8. Restore 9router db backup & start hidden (tray)
-        run: |
-          export INITIAL_PASSWORD="${{ secrets.RUNNER_PASSWORD }}"
-          # Make sure the data dir exists
-          mkdir -p ~/.9router/db
-          BACKUP_DIR="${GITHUB_WORKSPACE:-.}/9router"
-          # Restore the backed-up state from the repo (committed in 9router/data.sqlite)
-          if [ -f "$BACKUP_DIR/data.sqlite" ]; then
-            cp "$BACKUP_DIR/data.sqlite" ~/.9router/db/data.sqlite
-            echo '✅ Restored 9router data.sqlite from repo backup'
-          else
-            echo '⚠️ 9router/data.sqlite not found in repo — starting fresh'
-          fi
-          # Start 9router hidden in the background (tray mode) on the default port 20128.
-          nohup 9router --tray --skip-update -p 20128 > /tmp/9router.log 2>&1 &
-          sleep 6
-          if curl -fsS http://localhost:20128 > /dev/null 2>&1; then
-            echo '✅ 9router is live on http://localhost:20128'
-          else
-            echo '⚠️ 9router did not come up — check /tmp/9router.log'
-          fi
-
-      - name: 9. Install Hermes Agent & restore config + start Telegram gateway
-        env:
-          HERMES_API_KEY: ${{ secrets.HERMES_CUSTOM_API_KEY }}
-          GH_TOKEN: ${{ secrets.MY_PAT }}
-          TELEGRAM_ALLOWED_USERS: ${{ secrets.TELEGRAM_ALLOWED_USERS }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets[format('TELEGRAM_BOT_TOKEN_{0}', env.WF_NAME)] }}
-        run: |
-          echo "✅ Using Telegram bot: $WF_NAME (token: TELEGRAM_BOT_TOKEN_${WF_NAME})"
-
-          # 1. Install Hermes Agent
-          curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash
-          echo '✅ Hermes Agent installed'
-          export PATH="$HOME/.hermes/bin:$PATH"
-
-          # 2. Restore the full Hermes config, memories, and skills from repo
-          mkdir -p /home/runner/.hermes
-          cp -r "${GITHUB_WORKSPACE:-.}/hermes/"* /home/runner/.hermes/ 2>/dev/null || true
-          echo '✅ Restored /home/runner/.hermes from repo (hermes/ → ~/.hermes/)'
-
-          # 3. Write the .env with secrets pulled from GitHub Secrets.
-          {
-            echo "HERMES_CUSTOM_127_0_0_1_20128_API_KEY=${HERMES_API_KEY}"
-            echo "TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}"
-            echo "TELEGRAM_ALLOWED_USERS=${TELEGRAM_ALLOWED_USERS}"
-            echo "TELEGRAM_HOME_CHANNEL=${TELEGRAM_ALLOWED_USERS}"
-            echo "GITHUB_TOKEN=${GH_TOKEN}"
-          } > /home/runner/.hermes/.env
-          chmod 600 /home/runner/.hermes/.env
-          echo '✅ Wrote /home/runner/.hermes/.env from secrets'
-
-          # 4. Start the Hermes messaging gateway (Telegram) in the background.
-          nohup hermes gateway run --replace > /tmp/hermes-gateway.log 2>&1 &
-          sleep 6
-          if curl -fsS http://127.0.0.1:20128 > /dev/null 2>&1; then
-            echo '✅ 9router still live; Hermes gateway launching…'
-          fi
-          echo '✅ Hermes gateway launch attempted (logs: /tmp/hermes-gateway.log)'
-
 
 
       - name: 10. Server Keep-Alive (5h 50m)
@@ -171,29 +63,7 @@ jobs:
             echo "[$i/350] Server is active (SSH + 9router on port 20128)..."
           done
 
-      - name: 11. Sync Hermes memories & skills back to GitHub
-        if: always()
-        env:
-          GH_TOKEN: ${{ secrets.MY_PAT }}
-        run: |
-          cd "${GITHUB_WORKSPACE:-.}"
-          # Configure git for committing
-          git config user.name "Shabakebehdasht"
-          git config user.email "Shabakebehdasht@users.noreply.github.com"
-          # Authenticate with PAT for push
-          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/Shabakebehdasht/my-tail.git"
-          # Copy everything from .hermes back to repo (backup)
-          cp -r /home/runner/.hermes/* hermes/ 2>/dev/null || true
-          echo '✅ Copied .hermes → hermes/ for backup'
-          # Check if there are changes to commit
-          if git diff --quiet && git diff --cached --quiet; then
-            echo 'ℹ️ No changes to commit'
-          else
-            git add hermes/memories/ hermes/skills/ hermes/SOUL.md
-            git commit -m "Sync Hermes memories, skills & SOUL.md from sonia instance"
-            git push origin "${{ github.ref_name }}" || echo '⚠️ Push failed — changes saved locally'
-            echo '✅ Hermes memories & skills synced to GitHub'
-          fi
+
 
       - name: 12. Tailscale Logout (cleanup on shutdown)
         if: always()
