@@ -1,4 +1,4 @@
-name: nashenasn7
+name: nashenasn6
 
 on:
   schedule:
@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 360
     env:
-      WF_NAME: nashenasn7
+      WF_NAME: nashenasn6
 
     steps:
       - name: 1. Checkout Repository
