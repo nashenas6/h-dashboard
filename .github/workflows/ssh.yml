@@ -13,21 +13,9 @@ jobs:
       WF_NAME: nashenasn6
 
     steps:
-      - name: 1. Checkout Repository
-        uses: actions/checkout@v6
-        with:
-          persist-credentials: false
-
       - name: 2. Setup OpenSSH Server & Set Runner Password
         run: |
           sudo apt-get update
-          sudo apt-get upgrade -y
-          sudo apt-get install -y openssh-server
-          echo "runner:${{ secrets.RUNNER_PASSWORD }}" | sudo chpasswd
-          sudo sed -i 's/^#PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
-          sudo sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
-          sudo systemctl restart ssh
-          sudo systemctl enable ssh
 
       - name: 4. Connect Tailscale as Exit Node & Show Access Info
         env:
