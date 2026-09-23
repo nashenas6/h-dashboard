@@ -28,7 +28,7 @@ test.describe('users list', () => {
   });
 
   test('shows rows with data', async ({ page }) => {
-    const rows = await page.locator('table tbody tr').count();
+    const rows = await page.locator('main table tbody tr').count();
     expect(rows).toBeGreaterThan(0);
     // Seeded data has users — pagination shows total count
     await expect(page.locator('.mary-table-pagination')).toContainText('Showing');
@@ -39,7 +39,7 @@ test.describe('users list', () => {
     // عسگری is always present in seeded data (مهدی عسگری, the admin)
     await search.fill('عسگری');
     await page.waitForFunction(() => !document.querySelector('.wire-loading'), { timeout: 10000 });
-    await expect(page.locator('table tbody')).toContainText('عسگری');
+    await expect(page.locator('main table tbody')).toContainText('عسگری');
   });
 
   test('search by n_code filters the list', async ({ page }) => {
