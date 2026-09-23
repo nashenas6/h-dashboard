@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\HardwareExportController;
 use App\Services\ActivityLogService;
 use Illuminate\Support\Facades\Route;
 
@@ -10,12 +11,14 @@ Route::livewire('/login', 'auth.login')->name('login');
 Route::middleware(['auth', 'role_or_permission:manage_hardware'])->group(function () {
     Route::livewire('/hardware', 'hardware.index');
     Route::livewire('/hardware/import', 'hardware.import-hardware.import-hardware')->name('hardware.import');
+    Route::get('/hardware/export', [HardwareExportController::class, 'export'])->name('hardware.export');
+    Route::livewire('/maintenance', 'maintenance.index')->name('maintenance.index');
 });
 
 // Volt::route('/login', 'auth.login')->name('login');
-// Volt::route('/register', 'auth.register');
+// Route::livewire('/register', 'auth.register')->name('register');
 // Define the logout
-Route::get('/logout', function () {
+Route::post('/logout', function () {
     $userId = Auth::id();
     $userName = Auth::user()?->name ?? 'نامشخص';
 
@@ -30,7 +33,7 @@ Route::get('/logout', function () {
     request()->session()->regenerateToken();
 
     return redirect('/');
-});
+})->name('logout');
 
 // Test route for SafeRoleOrPermission middleware
 if (app()->isLocal() || app()->environment('testing')) {
@@ -44,19 +47,11 @@ Route::middleware('auth')->group(function () {
     Route::livewire('/select-context', 'select-context');
 
     Route::middleware('unit_context')->group(function () {
-        // Route::get('/', function () {
-        //     return view('welcome');
-        // });
-        // Route::get('/dashboard', function () {
-        //     return view('dashboard');
-        // });
-        Route::livewire('/', 'index'); // صفحه انتخاب نقش
+        Route::redirect('/', '/dashboard');
         Route::livewire('/dashboard', 'dashboard');
 
         Route::middleware('role_or_permission:manage_users')->group(function () {
             Route::livewire('/users', 'users.index');
-            Route::livewire('/users/create', 'users.create');
-            Route::livewire('/users/{user}/edit', 'users.edit');
         });
         Route::livewire('/users/changepassword', 'auth.changepassword');
 
@@ -154,6 +149,8 @@ Route::middleware('auth')->group(function () {
         // پروفایل کاربر (نیاز به لاگین)
         Route::livewire('/profile', 'profile.index')->name('profile');
         // ابزارهای مدیریتی
-        Route::livewire('/tools', 'tools.tools')->name('tools');
+        Route::middleware('role_or_permission:manage_users')->group(function () {
+            Route::livewire('/tools', 'tools.tools')->name('tools');
+        });
     }); // unit_context
 });

@@ -37,9 +37,12 @@
         font-family: 'Vazirmatn', sans-serif !important;
     }
 </style>
+@php
+    $compactMode = auth()->user()->settings['compact_mode'] ?? false;
+@endphp
 </head>
 
-<body class="min-h-screen font-sans antialiased stitch-bg">
+<body class="min-h-screen font-sans antialiased stitch-bg {{ $compactMode ? 'compact-mode' : '' }}">
     <!-- Stitch-style animated background JavaScript -->
     <script>
         // Initialize theme from localStorage on load (runs before Alpine/Livewire)
@@ -131,7 +134,6 @@
             <x-app-brand />
         </x-slot:brand>
         <x-slot:actions>
-            <livewire:notifications.bell />
             <a href="/search" wire:navigate class="btn btn-ghost btn-sm">
                 <x-icon name="o-magnifying-glass" class="w-5 h-5" />
                 <span class="hidden md:inline text-xs">جستجو</span>
@@ -153,7 +155,6 @@
                 <x-icon name="o-magnifying-glass" class="w-5 h-5" />
                 <span class="text-sm">جستجو</span>
             </a>
-            <livewire:notifications.bell />
         </div>
 
         {{-- SIDEBAR --}}
@@ -168,8 +169,10 @@
                 <x-list-item :item="auth()->user()" value="name" no-separator no-hover
                     class="-mx-2 !-my-2 rounded">
                     <x-slot:actions>
-                        <x-button icon="o-power" class="btn-circle btn-ghost btn-xs" tooltip-right="logoff"
-                            no-wire-navigate link="/logout" />
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <x-button type="submit" icon="o-power" class="btn-circle btn-ghost btn-xs" tooltip-right="logoff" no-wire-navigate />
+                        </form>
                     </x-slot:actions>
                 </x-list-item>
                 <x-menu-separator />
@@ -195,19 +198,10 @@
                 {{-- منابع انسانی --}}
                 @can('kargozini')
                 <x-menu-sub title="منابع انسانی" icon="o-user-group">
-                    <x-menu-item title="پرسنل" icon="o-user-group" link="/kargozini/persons" wire:navigate />
                     <x-menu-item title="استخدام" icon="o-briefcase" link="/kargozini/estekhdams" wire:navigate />
                     <x-menu-item title="ردیف سازمانی" icon="o-bars-3-bottom-right" link="/kargozini/radifs" wire:navigate />
                     <x-menu-item title="تحصیلات" icon="o-academic-cap" link="/kargozini/tahsils" wire:navigate />
                     <x-menu-item title="سمت‌ها" icon="o-clipboard-document-list" link="/kargozini/semats" wire:navigate />
-                </x-menu-sub>
-                @endcan
-
-                {{-- داشبورد منابع انسانی --}}
-                @can('view_hr_dashboard')
-                <x-menu-sub title="داشبورد منابع انسانی" icon="o-chart-bar">
-                    <x-menu-item title="آمار پرسنل" icon="o-chart-bar" link="/hr-dashboard" wire:navigate />
-                    <x-menu-item title="چارت سازمانی" icon="o-beaker" link="/hr/org-chart" wire:navigate />
                 </x-menu-sub>
                 @endcan
 
@@ -229,12 +223,21 @@
                 </x-menu-sub>
                 @endcanany
 
-                {{-- ساختار سازمان --}}
-                @can('organization')
-                <x-menu-sub title="ساختار سازمان" icon="o-building-library">
+                {{-- مدیریت سازمان --}}
+                @canany(['organization', 'kargozini', 'view_hr_dashboard'])
+                <x-menu-sub title="مدیریت سازمان" icon="o-building-library">
+                    @can('organization')
                     <x-menu-item title="مدیریت واحدها" icon="o-building-office-2" link="/units" wire:navigate />
+                    @endcan
+                    @can('kargozini')
+                    <x-menu-item title="پرسنل" icon="o-user-group" link="/kargozini/persons" wire:navigate />
+                    @endcan
+                    @can('view_hr_dashboard')
+                    <x-menu-item title="آمار پرسنل" icon="o-chart-bar" link="/hr-dashboard" wire:navigate />
+                    <x-menu-item title="چارت سازمانی" icon="o-beaker" link="/hr/org-chart" wire:navigate />
+                    @endcan
                 </x-menu-sub>
-                @endcan
+                @endcanany
 
                 {{-- کار با نقشه --}}
                 @can('map')
@@ -259,6 +262,7 @@
                     </a>
                     @can('manage_hardware')
                     <x-menu-item title="شناسنامه سخت افزار" icon="o-cpu-chip" link="/hardware" wire:navigate />
+                    <x-menu-item title="زمانبندی تعمیرات" icon="o-wrench-screwdriver" link="/maintenance" wire:navigate />
                     @endcan
                     <x-menu-item title="ابزارها" icon="o-wrench" link="/tools" wire:navigate />
                 </x-menu-sub>
@@ -312,9 +316,14 @@
     <x-toast />
     <!-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> -->
 <script>
+    // Register service worker for browser notifications
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+
     document.addEventListener('livewire:init', () => {
        Livewire.on('swal', (event) => {
-           const data = event[0]; // در لاووایر ۳ داده‌ها در اولین ایندکس آرایه هستند
+           const data = event[0];
            Swal.fire({
                title: data.title,
                icon: data.icon,
@@ -323,6 +332,13 @@
                toast: true,
                position: 'top-end'
            });
+       });
+
+       // Browser notification listener
+       Livewire.on('browser-notification', (data) => {
+           if ('Notification' in window && Notification.permission === 'granted') {
+               new Notification(data[0].title, { body: data[0].body });
+           }
        });
     });
 </script>

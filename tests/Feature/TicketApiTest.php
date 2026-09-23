@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Http\Controllers\Api\TicketController;
 use App\Models\Person;
 use App\Models\Ticket;
 use App\Models\Unit;
@@ -14,6 +15,8 @@ use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 use Tests\TestCase;
+
+covers(TicketController::class);
 
 class TicketApiTest extends TestCase
 {
@@ -42,12 +45,12 @@ class TicketApiTest extends TestCase
         $rId = DB::table('radifs')->insertGetId(['name' => 'Test']);
 
         $nCode = (string) fake()->unique()->numerify('##########');
-        Person::create(['n_code' => $nCode, 'f_name' => 'T', 'l_name' => 'U', 't_id' => $tId, 'e_id' => $eId, 's_id' => $sId, 'r_id' => $rId, 'u_id' => 1]);
+        $unit = Unit::create(['name' => 'Test Unit']);
+        Person::create(['n_code' => $nCode, 'f_name' => 'T', 'l_name' => 'U', 't_id' => $tId, 'e_id' => $eId, 's_id' => $sId, 'r_id' => $rId, 'u_id' => $unit->id]);
         $user = User::create(['n_code' => $nCode, 'password' => Hash::make('password')]);
         $user->assignRole('admin');
         $user->givePermissionTo(['create_ticket', 'view_assigned_tickets', 'view_all_tickets', 'manage_unit_tickets']);
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
-        $unit = Unit::create(['name' => 'Test Unit']);
         $user->units()->attach($unit->id, ['role' => 'staff', 'is_primary' => true]);
         Session::put('current_unit_id', $unit->id);
 
@@ -114,16 +117,16 @@ class TicketApiTest extends TestCase
         ['user' => $user, 'unit' => $unit] = $this->createUserWithUnit();
 
         $response = $this->actingAs($user, 'sanctum')->postJson('/api/tickets', [
-            'subject' => 'Medium Priority',
+            'subject' => 'Urgent Priority',
             'content' => 'Description',
-            'priority' => 'medium',
+            'priority' => 'urgent',
             'unit_id' => $unit->id,
         ]);
 
         $response->assertStatus(201)
             ->assertJson(['success' => true]);
 
-        $this->assertDatabaseHas('tickets', ['subject' => 'Medium Priority', 'priority' => 'medium']);
+        $this->assertDatabaseHas('tickets', ['subject' => 'Urgent Priority', 'priority' => 'urgent']);
     }
 
     public function test_user_can_update_ticket(): void
@@ -166,7 +169,8 @@ class TicketApiTest extends TestCase
     public function test_user_can_accept_ticket(): void
     {
         ['user' => $user, 'unit' => $unit] = $this->createUserWithUnit();
-        $ticket = Ticket::create(['ticket_code' => 'T-006', 'user_id' => $user->id, 'unit_id' => $unit->id, 'subject' => 'Accept', 'content' => 'Body', 'priority' => 'normal', 'status' => 'forwarded']);
+        // Issue #529: accept requires the user to be the assignee
+        $ticket = Ticket::create(['ticket_code' => 'T-006', 'user_id' => $user->id, 'unit_id' => $unit->id, 'subject' => 'Accept', 'content' => 'Body', 'priority' => 'normal', 'status' => 'forwarded', 'current_assignee_id' => $user->id]);
 
         $response = $this->actingAs($user, 'sanctum')->postJson("/api/tickets/{$ticket->id}/accept");
 
@@ -174,10 +178,42 @@ class TicketApiTest extends TestCase
             ->assertJson(['data' => ['status' => 'accepted']]);
     }
 
+    /**
+     * Issue #529: non-assignee must not be able to accept someone else's ticket.
+     */
+    public function test_non_assignee_cannot_accept_ticket(): void
+    {
+        ['user' => $user, 'unit' => $unit] = $this->createUserWithUnit();
+
+        // Second user in the SAME unit with same permissions (same org scope, different person)
+        $nCode2 = (string) fake()->unique()->numerify('##########');
+        $tId = DB::table('tahsils')->insertGetId(['name' => 'Test']);
+        $eId = DB::table('estekhdams')->insertGetId(['name' => 'Test']);
+        $sId = DB::table('semats')->insertGetId(['name' => 'Test']);
+        $rId = DB::table('radifs')->insertGetId(['name' => 'Test']);
+        Person::create(['n_code' => $nCode2, 'f_name' => 'A', 'l_name' => 'B', 't_id' => $tId, 'e_id' => $eId, 's_id' => $sId, 'r_id' => $rId, 'u_id' => $unit->id]);
+        $user2 = User::create(['n_code' => $nCode2, 'password' => Hash::make('password')]);
+        $user2->assignRole('admin');
+        $user2->units()->attach($unit->id, ['role' => 'staff', 'is_primary' => true]);
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
+
+        // Ticket assigned to $user, not $user2
+        $ticket = Ticket::create(['ticket_code' => 'T-0529', 'user_id' => $user->id, 'unit_id' => $unit->id, 'subject' => 'Not Yours', 'content' => 'Body', 'priority' => 'normal', 'status' => 'forwarded', 'current_assignee_id' => $user->id]);
+
+        // $user2 tries to accept — should be rejected
+        $response = $this->actingAs($user2, 'sanctum')->postJson("/api/tickets/{$ticket->id}/accept");
+
+        $response->assertStatus(403)
+            ->assertJson(['message' => 'Only the assigned user can accept this ticket.']);
+
+        $this->assertEquals('forwarded', $ticket->fresh()->status);
+    }
+
     public function test_user_can_complete_ticket(): void
     {
         ['user' => $user, 'unit' => $unit] = $this->createUserWithUnit();
-        $ticket = Ticket::create(['ticket_code' => 'T-007', 'user_id' => $user->id, 'unit_id' => $unit->id, 'subject' => 'Complete', 'content' => 'Body', 'priority' => 'normal', 'status' => 'accepted']);
+        // Issue #530: complete requires the user to be the assignee
+        $ticket = Ticket::create(['ticket_code' => 'T-007', 'user_id' => $user->id, 'unit_id' => $unit->id, 'subject' => 'Complete', 'content' => 'Body', 'priority' => 'normal', 'status' => 'accepted', 'current_assignee_id' => $user->id]);
 
         $response = $this->actingAs($user, 'sanctum')->postJson("/api/tickets/{$ticket->id}/complete");
 
@@ -186,10 +222,42 @@ class TicketApiTest extends TestCase
         $this->assertNotNull($ticket->fresh()->completed_at);
     }
 
+    /**
+     * Issue #530: non-assignee must not be able to complete someone else's ticket.
+     */
+    public function test_non_assignee_cannot_complete_ticket(): void
+    {
+        ['user' => $user, 'unit' => $unit] = $this->createUserWithUnit();
+
+        // Second user in the SAME unit with same permissions
+        $nCode2 = (string) fake()->unique()->numerify('##########');
+        $tId = DB::table('tahsils')->insertGetId(['name' => 'Test']);
+        $eId = DB::table('estekhdams')->insertGetId(['name' => 'Test']);
+        $sId = DB::table('semats')->insertGetId(['name' => 'Test']);
+        $rId = DB::table('radifs')->insertGetId(['name' => 'Test']);
+        Person::create(['n_code' => $nCode2, 'f_name' => 'A', 'l_name' => 'B', 't_id' => $tId, 'e_id' => $eId, 's_id' => $sId, 'r_id' => $rId, 'u_id' => $unit->id]);
+        $user2 = User::create(['n_code' => $nCode2, 'password' => Hash::make('password')]);
+        $user2->assignRole('admin');
+        $user2->units()->attach($unit->id, ['role' => 'staff', 'is_primary' => true]);
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
+
+        // Ticket accepted by $user, not $user2
+        $ticket = Ticket::create(['ticket_code' => 'T-0530', 'user_id' => $user->id, 'unit_id' => $unit->id, 'subject' => 'Not Yours', 'content' => 'Body', 'priority' => 'normal', 'status' => 'accepted', 'current_assignee_id' => $user->id]);
+
+        // $user2 tries to complete — should be rejected
+        $response = $this->actingAs($user2, 'sanctum')->postJson("/api/tickets/{$ticket->id}/complete");
+
+        $response->assertStatus(403)
+            ->assertJson(['message' => 'Only the assigned user can complete this ticket.']);
+
+        $this->assertEquals('accepted', $ticket->fresh()->status);
+    }
+
     public function test_cannot_complete_non_accepted_ticket(): void
     {
         ['user' => $user, 'unit' => $unit] = $this->createUserWithUnit();
-        $ticket = Ticket::create(['ticket_code' => 'T-008', 'user_id' => $user->id, 'unit_id' => $unit->id, 'subject' => 'Not Ready', 'content' => 'Body', 'priority' => 'normal', 'status' => 'created']);
+        // Issue #530: assignee is set, but status is 'created' (not 'accepted') → 422
+        $ticket = Ticket::create(['ticket_code' => 'T-008', 'user_id' => $user->id, 'unit_id' => $unit->id, 'subject' => 'Not Ready', 'content' => 'Body', 'priority' => 'normal', 'status' => 'created', 'current_assignee_id' => $user->id]);
 
         $response = $this->actingAs($user, 'sanctum')->postJson("/api/tickets/{$ticket->id}/complete");
 

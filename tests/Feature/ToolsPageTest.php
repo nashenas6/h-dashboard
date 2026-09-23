@@ -3,12 +3,15 @@
 use App\Models\Person;
 use App\Models\Unit;
 use App\Models\User;
+use App\Services\ZabbixService;
 use Database\Seeders\PermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Livewire;
 use Tests\TestCase;
+
+covers(ZabbixService::class);
 
 uses(TestCase::class, RefreshDatabase::class);
 
@@ -36,6 +39,7 @@ beforeEach(function () {
         'n_code' => '1234567890',
         'password' => Hash::make('password'),
     ]);
+    $this->user->givePermissionTo('manage_users');
 });
 
 test('guest is redirected from tools page', function () {

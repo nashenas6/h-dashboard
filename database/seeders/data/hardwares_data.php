@@ -1,7 +1,7 @@
 <?php
 
 return [
-    [
+    0 => [
         'n_code' => '9585766959',
         'pc_name' => 'AB-17SH-BM2',
         'type' => 'pc',
@@ -22,7 +22,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    1 => [
         'n_code' => '2795950689',
         'pc_name' => 'MA-17SH-DENT',
         'type' => 'pc',
@@ -43,7 +43,7 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
+    2 => [
         'n_code' => '5222452874',
         'pc_name' => 'AB-17SH-DR1',
         'type' => 'pc',
@@ -64,7 +64,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    3 => [
         'n_code' => '7724412612',
         'pc_name' => 'AB-17SH-EZDEVAJ',
         'type' => 'pc',
@@ -85,7 +85,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    4 => [
         'n_code' => '2954704745',
         'pc_name' => 'AB-17SH-LAB1',
         'type' => 'pc',
@@ -106,7 +106,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    5 => [
         'n_code' => '1600286198',
         'pc_name' => 'AB-17SH-LAB2',
         'type' => 'pc',
@@ -127,7 +127,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    6 => [
         'n_code' => '9137317062',
         'pc_name' => 'MA-17SH-LAB3',
         'type' => 'pc',
@@ -148,7 +148,7 @@ return [
         'mark' => false,
         'clean_at' => '2026-02-08',
     ],
-    [
+    7 => [
         'n_code' => '0885727024',
         'pc_name' => 'MA-17SH-LAB4',
         'type' => 'pc',
@@ -169,7 +169,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    8 => [
         'n_code' => '7016684242',
         'pc_name' => 'AB-17SH-P1-3',
         'type' => 'pc',
@@ -190,8 +190,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '2426240446',
+    9 => [
+        'n_code' => '1870206698',
         'pc_name' => 'AB-17SH-P3-1',
         'type' => 'pc',
         'os' => '10 Windows',
@@ -211,7 +211,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    10 => [
         'n_code' => '1081149811',
         'pc_name' => 'AB-17SH-P3-2',
         'type' => 'pc',
@@ -232,7 +232,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    11 => [
         'n_code' => '8127028027',
         'pc_name' => 'AB-17SH-P3-3',
         'type' => 'pc',
@@ -253,7 +253,7 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
+    12 => [
         'n_code' => '7391691009',
         'pc_name' => 'MA-17SH-PAZIRESH',
         'type' => 'pc',
@@ -274,7 +274,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    13 => [
         'n_code' => '2577371273',
         'pc_name' => 'AB-17SH-RAVAN',
         'type' => 'pc',
@@ -295,8 +295,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '0711783646',
+    14 => [
+        'n_code' => '0194615805',
         'pc_name' => 'AB-17SH-TAGHZIE',
         'type' => 'pc',
         'os' => '10 Windows',
@@ -316,7 +316,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    15 => [
         'n_code' => '5826804717',
         'pc_name' => 'AB-17SH-VACCINE',
         'type' => 'pc',
@@ -337,7 +337,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    16 => [
         'n_code' => '6998672957',
         'pc_name' => 'AB-ABBAS-DR',
         'type' => 'pc',
@@ -358,7 +358,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    17 => [
         'n_code' => '7512950941',
         'pc_name' => 'AB-ABBAS-DRUG',
         'type' => 'pc',
@@ -379,8 +379,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '6568736142',
+    18 => [
+        'n_code' => '0304828193',
         'pc_name' => 'AB-ABBAS-KH1',
         'type' => 'pc',
         'os' => '10 Windows',
@@ -400,7 +400,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    19 => [
         'n_code' => '0304828193',
         'pc_name' => 'AB-ABBAS-KH2',
         'type' => 'pc',
@@ -421,7 +421,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    20 => [
         'n_code' => '1817932847',
         'pc_name' => 'AB-ABBAS-MAMA',
         'type' => 'pc',
@@ -442,8 +442,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '8175179965',
+    21 => [
+        'n_code' => '3723354184',
         'pc_name' => 'AB-ABBAS-NAZER',
         'type' => 'pc',
         'os' => '10 Windows',
@@ -463,7 +463,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    22 => [
         'n_code' => '5422101593',
         'pc_name' => 'MA-ABBAS-PAZIR',
         'type' => 'pc',
@@ -484,7 +484,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    23 => [
         'n_code' => '2584968379',
         'pc_name' => 'AB-AL-AUDIOMETR',
         'type' => 'pc',
@@ -505,7 +505,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    24 => [
         'n_code' => '6658537421',
         'pc_name' => 'AB-AL-BH',
         'type' => 'pc',
@@ -526,7 +526,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    25 => [
         'n_code' => '5537782279',
         'pc_name' => 'AB-AL-BM',
         'type' => 'pc',
@@ -547,7 +547,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    26 => [
         'n_code' => '7713299438',
         'pc_name' => 'AB-AL-DR',
         'type' => 'pc',
@@ -568,7 +568,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    27 => [
         'n_code' => '1953150659',
         'pc_name' => 'AB-AL-FORIAT',
         'type' => 'pc',
@@ -589,7 +589,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    28 => [
         'n_code' => '6625855291',
         'pc_name' => 'AB-ALG-DR',
         'type' => 'pc',
@@ -610,7 +610,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    29 => [
         'n_code' => '7269824787',
         'pc_name' => 'AB-ALG-DRUG',
         'type' => 'pc',
@@ -631,8 +631,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '6471558368',
+    30 => [
+        'n_code' => '0548317786',
         'pc_name' => 'AB-ALG-KH1',
         'type' => 'pc',
         'os' => '7 Windows',
@@ -652,7 +652,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    31 => [
         'n_code' => '0548317786',
         'pc_name' => 'AB-ALG-KH2',
         'type' => 'pc',
@@ -673,7 +673,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    32 => [
         'n_code' => '3326914136',
         'pc_name' => 'AB-ALG-KH3',
         'type' => 'pc',
@@ -694,7 +694,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    33 => [
         'n_code' => '4989617629',
         'pc_name' => 'AB-ALG-MAMA',
         'type' => 'pc',
@@ -715,8 +715,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '4967346047',
+    34 => [
+        'n_code' => '3226913701',
         'pc_name' => 'AB-ALG-NAZER',
         'type' => 'pc',
         'os' => null,
@@ -736,8 +736,8 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '9867877652',
+    35 => [
+        'n_code' => '7269824787',
         'pc_name' => 'AB-ALG-PAZIR',
         'type' => 'pc',
         'os' => '10 Windows',
@@ -757,7 +757,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    36 => [
         'n_code' => '4437350430',
         'pc_name' => 'MA-AL-LAB3',
         'type' => 'pc',
@@ -778,7 +778,7 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
+    37 => [
         'n_code' => '2583119499',
         'pc_name' => 'AB-AL-LAB4',
         'type' => 'pc',
@@ -799,7 +799,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    38 => [
         'n_code' => '9603546512',
         'pc_name' => 'AB-AL-MAMA',
         'type' => 'pc',
@@ -820,7 +820,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    39 => [
         'n_code' => '0268374374',
         'pc_name' => 'AB-AL-P1-1',
         'type' => 'pc',
@@ -841,7 +841,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    40 => [
         'n_code' => '2531232640',
         'pc_name' => 'AB-AL-P1-2',
         'type' => 'pc',
@@ -862,7 +862,7 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
+    41 => [
         'n_code' => '1851040387',
         'pc_name' => 'AB-AL-P1-3',
         'type' => 'pc',
@@ -883,7 +883,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    42 => [
         'n_code' => '1661504322',
         'pc_name' => 'MA-AL-PAZIR',
         'type' => 'pc',
@@ -904,8 +904,8 @@ return [
         'mark' => false,
         'clean_at' => '2025-12-30',
     ],
-    [
-        'n_code' => '2754400756',
+    43 => [
+        'n_code' => '0194615805',
         'pc_name' => 'MA-AL-TAGHZIE',
         'type' => 'pc',
         'os' => '10 Windows',
@@ -925,7 +925,7 @@ return [
         'mark' => false,
         'clean_at' => '2026-01-14',
     ],
-    [
+    44 => [
         'n_code' => '8787491124',
         'pc_name' => 'AB-AM-BM',
         'type' => 'pc',
@@ -946,7 +946,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    45 => [
         'n_code' => '5674253660',
         'pc_name' => 'MA-AM-DENT',
         'type' => 'pc',
@@ -967,7 +967,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    46 => [
         'n_code' => '2008795237',
         'pc_name' => 'MA-AM-DR',
         'type' => 'pc',
@@ -988,7 +988,7 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
+    47 => [
         'n_code' => '3021215510',
         'pc_name' => 'MA-AMIRBOSTAGH',
         'type' => 'pc',
@@ -1009,8 +1009,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '9079692148',
+    48 => [
+        'n_code' => '4434996456',
         'pc_name' => 'AB-AM-KH1',
         'type' => 'pc',
         'os' => '7 Windows',
@@ -1030,8 +1030,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '6334814519',
+    49 => [
+        'n_code' => '4434996456',
         'pc_name' => 'AB-AM-KH2',
         'type' => 'pc',
         'os' => '7 Windows',
@@ -1051,7 +1051,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    50 => [
         'n_code' => '4434996456',
         'pc_name' => 'AB-AM-KH3',
         'type' => 'pc',
@@ -1072,8 +1072,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '3170539031',
+    51 => [
+        'n_code' => '0046139862',
         'pc_name' => 'AB-AM-LAB',
         'type' => 'pc',
         'os' => '7 Windows',
@@ -1093,7 +1093,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    52 => [
         'n_code' => '2547706097',
         'pc_name' => 'AB-AM-MAMA',
         'type' => 'pc',
@@ -1114,7 +1114,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    53 => [
         'n_code' => '3226913701',
         'pc_name' => 'MA-AM-NAZER',
         'type' => 'pc',
@@ -1135,7 +1135,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    54 => [
         'n_code' => '8491450518',
         'pc_name' => 'AB-AMOOZESH1',
         'type' => 'pc',
@@ -1156,7 +1156,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    55 => [
         'n_code' => '2776511798',
         'pc_name' => 'MA-AMOOZESH2',
         'type' => 'pc',
@@ -1177,7 +1177,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    56 => [
         'n_code' => '8408207742',
         'pc_name' => 'AB-AMOOZESH3',
         'type' => 'pc',
@@ -1198,7 +1198,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    57 => [
         'n_code' => '3711503626',
         'pc_name' => 'MA-AM-PAZIR',
         'type' => 'pc',
@@ -1219,7 +1219,7 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
+    58 => [
         'n_code' => '3332895211',
         'pc_name' => 'AB-AMVAL',
         'type' => 'pc',
@@ -1240,7 +1240,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    59 => [
         'n_code' => '5529965484',
         'pc_name' => 'AB-ANBAR2',
         'type' => 'pc',
@@ -1261,7 +1261,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    60 => [
         'n_code' => '7651142093',
         'pc_name' => 'AB-ANBAR3',
         'type' => 'pc',
@@ -1282,7 +1282,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    61 => [
         'n_code' => '1665814324',
         'pc_name' => 'MA-AQOOR',
         'type' => 'pc',
@@ -1303,8 +1303,8 @@ return [
         'mark' => false,
         'clean_at' => '2025-09-15',
     ],
-    [
-        'n_code' => '5375645649',
+    62 => [
+        'n_code' => '1880785582',
         'pc_name' => 'AB-ARHAN1',
         'type' => 'pc',
         'os' => '7 Windows',
@@ -1324,7 +1324,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    63 => [
         'n_code' => '1880785582',
         'pc_name' => 'AB-ARHAN2',
         'type' => 'pc',
@@ -1345,7 +1345,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    64 => [
         'n_code' => '3276991269',
         'pc_name' => 'AB-ASNAD',
         'type' => 'pc',
@@ -1366,7 +1366,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    65 => [
         'n_code' => '0742599908',
         'pc_name' => 'AB-AZ-MARKAZI1',
         'type' => 'pc',
@@ -1387,7 +1387,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    66 => [
         'n_code' => '3882026042',
         'pc_name' => 'MA-AZ-MARKAZI2',
         'type' => 'pc',
@@ -1408,8 +1408,8 @@ return [
         'mark' => false,
         'clean_at' => '2025-12-30',
     ],
-    [
-        'n_code' => '7182330793',
+    67 => [
+        'n_code' => '4265576148',
         'pc_name' => 'AB-AZNAB1',
         'type' => 'pc',
         'os' => '7 Windows',
@@ -1429,7 +1429,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    68 => [
         'n_code' => '4265576148',
         'pc_name' => 'AB-AZNAB2',
         'type' => 'pc',
@@ -1450,7 +1450,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    69 => [
         'n_code' => '9780888668',
         'pc_name' => 'AB-BEHVARZI1',
         'type' => 'pc',
@@ -1471,7 +1471,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    70 => [
         'n_code' => '6107715206',
         'pc_name' => 'AB-BEHVARZI2',
         'type' => 'pc',
@@ -1492,7 +1492,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    71 => [
         'n_code' => '1195910331',
         'pc_name' => 'AB-BEHVARZI3',
         'type' => 'pc',
@@ -1513,7 +1513,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    72 => [
         'n_code' => '7656406348',
         'pc_name' => 'AB-BEHVARZI4',
         'type' => 'pc',
@@ -1534,7 +1534,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    73 => [
         'n_code' => '4694301052',
         'pc_name' => 'AB-BEHVARZI5',
         'type' => 'pc',
@@ -1555,7 +1555,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    74 => [
         'n_code' => '0502286525',
         'pc_name' => 'AB-BEHVARZI6',
         'type' => 'pc',
@@ -1576,7 +1576,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    75 => [
         'n_code' => '8428529778',
         'pc_name' => 'AB-BEHVARZI7',
         'type' => 'pc',
@@ -1597,7 +1597,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    76 => [
         'n_code' => '0635789624',
         'pc_name' => 'AB-BEHVARZI8',
         'type' => 'pc',
@@ -1618,8 +1618,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '7893359091',
+    77 => [
+        'n_code' => '4411015056',
         'pc_name' => 'SW-CORE',
         'type' => 'switch',
         'os' => 'Cisco 3750x',
@@ -1639,7 +1639,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    78 => [
         'n_code' => '7559426890',
         'pc_name' => 'AB-BEHVARZI-LAP',
         'type' => 'pc',
@@ -1660,8 +1660,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '4117057485',
+    79 => [
+        'n_code' => '0023548258',
         'pc_name' => 'MA-BH2',
         'type' => 'pc',
         'os' => '10 Windows',
@@ -1681,7 +1681,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    80 => [
         'n_code' => '7907007064',
         'pc_name' => 'MA-BH1',
         'type' => 'pc',
@@ -1702,8 +1702,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '7183863173',
+    81 => [
+        'n_code' => '4411015056',
         'pc_name' => 'SW-11(SWITCH-A)',
         'type' => 'switch',
         'os' => 'Cisco 2960',
@@ -1723,7 +1723,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    82 => [
         'n_code' => '2198294980',
         'pc_name' => 'MA-BH3',
         'type' => 'pc',
@@ -1744,7 +1744,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    83 => [
         'n_code' => '9439885690',
         'pc_name' => 'AB-BH4',
         'type' => 'pc',
@@ -1765,8 +1765,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '0604543816',
+    84 => [
+        'n_code' => '4411015056',
         'pc_name' => 'SW-12(SWITCH-B)',
         'type' => 'switch',
         'os' => 'Cisco 2960',
@@ -1786,7 +1786,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    85 => [
         'n_code' => '4703062320',
         'pc_name' => 'AB-BIMAGVAGIR1',
         'type' => 'pc',
@@ -1807,8 +1807,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '1701680460',
+    86 => [
+        'n_code' => '4411015056',
         'pc_name' => 'SW-13(SWITCH-C)',
         'type' => 'switch',
         'os' => 'Cisco C2960X',
@@ -1828,7 +1828,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    87 => [
         'n_code' => '4399215648',
         'pc_name' => 'AB-BIMAGVAGIR2',
         'type' => 'pc',
@@ -1849,8 +1849,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '6891037166',
+    88 => [
+        'n_code' => '4411015056',
         'pc_name' => 'SW-E',
         'type' => 'switch',
         'os' => 'Cisco 2960',
@@ -1870,8 +1870,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '1257539197',
+    89 => [
+        'n_code' => '4411015056',
         'pc_name' => 'AB-S4',
         'type' => 'vm',
         'os' => 'Server 2025',
@@ -1891,7 +1891,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    90 => [
         'n_code' => '5614584792',
         'pc_name' => 'AB-BIMAVAGIR1',
         'type' => 'pc',
@@ -1912,8 +1912,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '4300306676',
+    91 => [
+        'n_code' => '4411015056',
         'pc_name' => 'AB-S6',
         'type' => 'vm',
         'os' => 'Server 2022',
@@ -1933,8 +1933,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '4657779312',
+    92 => [
+        'n_code' => '4411015056',
         'pc_name' => 'AB-S5',
         'type' => 'vm',
         'os' => 'Server 2022',
@@ -1954,8 +1954,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '0387976840',
+    93 => [
+        'n_code' => '4411015056',
         'pc_name' => 'AB-HYPER3',
         'type' => 'hyperv',
         'os' => 'Server 2022',
@@ -1975,8 +1975,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '7966546572',
+    94 => [
+        'n_code' => '4411015056',
         'pc_name' => 'AB-S1',
         'type' => 'vm',
         'os' => 'Server 2022',
@@ -1996,8 +1996,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '8668802649',
+    95 => [
+        'n_code' => '4411015056',
         'pc_name' => 'AB-DIGIBOX',
         'type' => 'vm',
         'os' => 'Vmware',
@@ -2017,8 +2017,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '9444373836',
+    96 => [
+        'n_code' => '4411015056',
         'pc_name' => 'AB-S7',
         'type' => 'vm',
         'os' => 'Server 2022',
@@ -2038,8 +2038,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '1215461540',
+    97 => [
+        'n_code' => '0704123927',
         'pc_name' => 'TIMEX-SETAD',
         'type' => 'timex',
         'os' => null,
@@ -2059,8 +2059,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '7744186499',
+    98 => [
+        'n_code' => '5614584792',
         'pc_name' => 'FREEZEYE',
         'type' => 'freezeye',
         'os' => null,
@@ -2080,8 +2080,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '5074548185',
+    99 => [
+        'n_code' => '4411015056',
         'pc_name' => 'SW-RIASAT',
         'type' => 'switch',
         'os' => 'D-LINK',
@@ -2101,8 +2101,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '2140181737',
+    100 => [
+        'n_code' => '4411015056',
         'pc_name' => 'SW-GOSTARESH',
         'type' => 'switch',
         'os' => 'TP-LINK',
@@ -2122,8 +2122,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '5477264435',
+    101 => [
+        'n_code' => '4411015056',
         'pc_name' => 'AB-ADMINKIT',
         'type' => 'vm',
         'os' => 'Server 2022',
@@ -2143,7 +2143,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    102 => [
         'n_code' => '0965777273',
         'pc_name' => 'MA-BIMAVAGIR3',
         'type' => 'pc',
@@ -2164,7 +2164,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    103 => [
         'n_code' => '8397093367',
         'pc_name' => 'AB-BIMAVAGIR4',
         'type' => 'pc',
@@ -2185,7 +2185,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    104 => [
         'n_code' => '0249396823',
         'pc_name' => 'MA-BKH2',
         'type' => 'pc',
@@ -2206,7 +2206,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    105 => [
         'n_code' => '3982578454',
         'pc_name' => 'AB-BKH4',
         'type' => 'pc',
@@ -2227,7 +2227,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    106 => [
         'n_code' => '9164702109',
         'pc_name' => 'AB-BM1',
         'type' => 'pc',
@@ -2248,7 +2248,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    107 => [
         'n_code' => '3875775489',
         'pc_name' => 'AB-BM2',
         'type' => 'pc',
@@ -2269,7 +2269,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    108 => [
         'n_code' => '1884771428',
         'pc_name' => 'MA-BM3',
         'type' => 'pc',
@@ -2290,7 +2290,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    109 => [
         'n_code' => '7796530982',
         'pc_name' => 'AB-BM4',
         'type' => 'pc',
@@ -2311,7 +2311,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    110 => [
         'n_code' => '3328340932',
         'pc_name' => 'AB-BOHRAN',
         'type' => 'pc',
@@ -2332,7 +2332,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    111 => [
         'n_code' => '3252112020',
         'pc_name' => 'MA-CHANGALMAS',
         'type' => 'pc',
@@ -2353,7 +2353,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    112 => [
         'n_code' => '6275537615',
         'pc_name' => 'MB-RIASAT-LAP',
         'type' => 'pc',
@@ -2374,7 +2374,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    113 => [
         'n_code' => '1621352323',
         'pc_name' => 'AB-DABIR1',
         'type' => 'pc',
@@ -2395,7 +2395,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    114 => [
         'n_code' => '9280149079',
         'pc_name' => 'MA-DABIR2',
         'type' => 'pc',
@@ -2416,7 +2416,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    115 => [
         'n_code' => '1536688731',
         'pc_name' => 'AB-DA-BM',
         'type' => 'pc',
@@ -2437,7 +2437,7 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
+    116 => [
         'n_code' => '9842996727',
         'pc_name' => 'AB-DA-DR',
         'type' => 'pc',
@@ -2458,7 +2458,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    117 => [
         'n_code' => '4604917750',
         'pc_name' => 'MA-DA-DRUG',
         'type' => 'pc',
@@ -2479,7 +2479,7 @@ return [
         'mark' => false,
         'clean_at' => '2025-02-06',
     ],
-    [
+    118 => [
         'n_code' => '3495598876',
         'pc_name' => 'AB-DA-KH1',
         'type' => 'pc',
@@ -2500,8 +2500,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '3663241438',
+    119 => [
+        'n_code' => '3495598876',
         'pc_name' => 'AB-DA-KH2',
         'type' => 'pc',
         'os' => '10 Windows',
@@ -2521,8 +2521,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '7829410869',
+    120 => [
+        'n_code' => '2611140424',
         'pc_name' => 'MA-DA-MAMA',
         'type' => 'pc',
         'os' => '10 Windows',
@@ -2542,8 +2542,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '8157330339',
+    121 => [
+        'n_code' => '4411015056',
         'pc_name' => 'AB-S2',
         'type' => 'vm',
         'os' => 'Server 2022',
@@ -2563,8 +2563,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '7298419398',
+    122 => [
+        'n_code' => '1750062174',
         'pc_name' => 'MA-DA-NAZER',
         'type' => 'pc',
         'os' => '10 Windows',
@@ -2584,7 +2584,7 @@ return [
         'mark' => false,
         'clean_at' => '2025-12-30',
     ],
-    [
+    123 => [
         'n_code' => '2020106280',
         'pc_name' => 'AB-DA-PAZIR',
         'type' => 'pc',
@@ -2605,7 +2605,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    124 => [
         'n_code' => '8205273512',
         'pc_name' => 'MA-DENTAL',
         'type' => 'pc',
@@ -2626,7 +2626,7 @@ return [
         'mark' => false,
         'clean_at' => '2025-09-25',
     ],
-    [
+    125 => [
         'n_code' => '4966049031',
         'pc_name' => 'MA-DF1',
         'type' => 'pc',
@@ -2647,7 +2647,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    126 => [
         'n_code' => '0214424925',
         'pc_name' => 'AB-DF2',
         'type' => 'pc',
@@ -2668,7 +2668,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    127 => [
         'n_code' => '6173977838',
         'pc_name' => 'AB-DO-DRUG',
         'type' => 'pc',
@@ -2689,7 +2689,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    128 => [
         'n_code' => '0226614726',
         'pc_name' => 'AB-DO-KH1',
         'type' => 'pc',
@@ -2710,7 +2710,7 @@ return [
         'mark' => false,
         'clean_at' => '2026-01-14',
     ],
-    [
+    129 => [
         'n_code' => '2611140424',
         'pc_name' => 'MA-DO-MAMA',
         'type' => 'pc',
@@ -2731,7 +2731,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    130 => [
         'n_code' => '2375858251',
         'pc_name' => 'AB-DO-PAZIR',
         'type' => 'pc',
@@ -2752,7 +2752,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    131 => [
         'n_code' => '4045870289',
         'pc_name' => 'MA-GOSTARESH5',
         'type' => 'pc',
@@ -2773,7 +2773,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    132 => [
         'n_code' => '3101776999',
         'pc_name' => 'MA-ESPAS',
         'type' => 'pc',
@@ -2794,7 +2794,7 @@ return [
         'mark' => false,
         'clean_at' => '2025-02-06',
     ],
-    [
+    133 => [
         'n_code' => '3371274437',
         'pc_name' => 'MA-EYVANAK',
         'type' => 'pc',
@@ -2815,8 +2815,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '7551041494',
+    134 => [
+        'n_code' => '5553798168',
         'pc_name' => 'AB-FONOOSHABAD',
         'type' => 'pc',
         'os' => '7 Windows',
@@ -2836,8 +2836,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '7641384469',
+    135 => [
+        'n_code' => '5553798168',
         'pc_name' => 'AB-FONOOSHABAD2',
         'type' => 'pc',
         'os' => '7 Windows',
@@ -2857,7 +2857,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    136 => [
         'n_code' => '5553798168',
         'pc_name' => 'AB-FONOOSHABAD3',
         'type' => 'pc',
@@ -2878,7 +2878,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    137 => [
         'n_code' => '4844837742',
         'pc_name' => 'MA-GHAFASABAD',
         'type' => 'pc',
@@ -2899,7 +2899,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    138 => [
         'n_code' => '7562794515',
         'pc_name' => 'AB-GHAMACHABAD',
         'type' => 'pc',
@@ -2920,7 +2920,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    139 => [
         'n_code' => '3279459656',
         'pc_name' => 'AB-GHARLOOGH',
         'type' => 'pc',
@@ -2941,7 +2941,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    140 => [
         'n_code' => '3708915043',
         'pc_name' => 'AB-GHAZADAROO1',
         'type' => 'pc',
@@ -2962,7 +2962,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    141 => [
         'n_code' => '8706196554',
         'pc_name' => 'AB-GHAZADAROO2',
         'type' => 'pc',
@@ -2983,8 +2983,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '2404237950',
+    142 => [
+        'n_code' => '4411015056',
         'pc_name' => 'AB-HYPER1',
         'type' => 'hyperv',
         'os' => 'Server 2022',
@@ -3004,8 +3004,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '5902600396',
+    143 => [
+        'n_code' => '2957513884',
         'pc_name' => 'MA-GH-BM',
         'type' => 'pc',
         'os' => '10 Windows',
@@ -3025,7 +3025,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    144 => [
         'n_code' => '2300288437',
         'pc_name' => 'MA-GH-DR',
         'type' => 'pc',
@@ -3046,7 +3046,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    145 => [
         'n_code' => '3793641304',
         'pc_name' => 'AB-GH-DRUG',
         'type' => 'pc',
@@ -3067,7 +3067,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    146 => [
         'n_code' => '2067341517',
         'pc_name' => 'MA-GHEZELJE',
         'type' => 'pc',
@@ -3088,8 +3088,8 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '8955783982',
+    147 => [
+        'n_code' => '6017126698',
         'pc_name' => 'AB-GH-KH1',
         'type' => 'pc',
         'os' => '10 Windows',
@@ -3109,8 +3109,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '8576895667',
+    148 => [
+        'n_code' => '6017126698',
         'pc_name' => 'AB-GH-KH2',
         'type' => 'pc',
         'os' => '7 Windows',
@@ -3130,7 +3130,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    149 => [
         'n_code' => '6017126698',
         'pc_name' => 'AB-GH-KH3',
         'type' => 'pc',
@@ -3151,7 +3151,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    150 => [
         'n_code' => '4354946794',
         'pc_name' => 'AB-GH-MAMA',
         'type' => 'pc',
@@ -3172,7 +3172,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    151 => [
         'n_code' => '3723354184',
         'pc_name' => 'AB-GH-NAZER',
         'type' => 'pc',
@@ -3193,8 +3193,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '5551930848',
+    152 => [
+        'n_code' => '1254889481',
         'pc_name' => 'AB-GH-PAZIR',
         'type' => 'pc',
         'os' => '7 Windows',
@@ -3214,8 +3214,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '6589591993',
+    153 => [
+        'n_code' => '4411015056',
         'pc_name' => 'AB-HYPER2',
         'type' => 'hyperv',
         'os' => 'Server 2022',
@@ -3235,7 +3235,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    154 => [
         'n_code' => '6292167730',
         'pc_name' => 'AB-GHUHCHIN',
         'type' => 'pc',
@@ -3256,7 +3256,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    155 => [
         'n_code' => '1692062981',
         'pc_name' => 'MA-GOSTARESH1',
         'type' => 'pc',
@@ -3277,7 +3277,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    156 => [
         'n_code' => '9583812020',
         'pc_name' => 'MA-GOSTARESH2',
         'type' => 'pc',
@@ -3298,7 +3298,7 @@ return [
         'mark' => false,
         'clean_at' => '2026-02-01',
     ],
-    [
+    157 => [
         'n_code' => '2842871465',
         'pc_name' => 'MA-GOSTARESH3',
         'type' => 'pc',
@@ -3319,7 +3319,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    158 => [
         'n_code' => '5462921574',
         'pc_name' => 'MA-GOSTARESH4',
         'type' => 'pc',
@@ -3340,7 +3340,7 @@ return [
         'mark' => false,
         'clean_at' => '2026-02-01',
     ],
-    [
+    159 => [
         'n_code' => '8785993781',
         'pc_name' => 'AB-GOZINESH',
         'type' => 'pc',
@@ -3361,7 +3361,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    160 => [
         'n_code' => '7541204493',
         'pc_name' => 'AB-HA-BM',
         'type' => 'pc',
@@ -3382,7 +3382,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    161 => [
         'n_code' => '1348041427',
         'pc_name' => 'AB-HA-DENT',
         'type' => 'pc',
@@ -3403,7 +3403,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    162 => [
         'n_code' => '4116593966',
         'pc_name' => 'AB-HA-DR1',
         'type' => 'pc',
@@ -3424,7 +3424,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    163 => [
         'n_code' => '6538845856',
         'pc_name' => 'AB-HA-DR2',
         'type' => 'pc',
@@ -3445,8 +3445,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '0344447689',
+    164 => [
+        'n_code' => '4411015056',
         'pc_name' => 'MA-CONTAINERS',
         'type' => 'vm',
         'os' => 'Ubuntu',
@@ -3466,7 +3466,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    165 => [
         'n_code' => '2105701185',
         'pc_name' => 'AB-HA-MAMA',
         'type' => 'pc',
@@ -3487,7 +3487,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    166 => [
         'n_code' => '9495163168',
         'pc_name' => 'AB-HA-NAZER',
         'type' => 'pc',
@@ -3508,7 +3508,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    167 => [
         'n_code' => '1158712591',
         'pc_name' => 'AB-HA-P1-1',
         'type' => 'pc',
@@ -3529,7 +3529,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    168 => [
         'n_code' => '7308073758',
         'pc_name' => 'MA-HA-P1-2',
         'type' => 'pc',
@@ -3550,7 +3550,7 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
+    169 => [
         'n_code' => '3064231325',
         'pc_name' => 'AB-HA-P1-3',
         'type' => 'pc',
@@ -3571,7 +3571,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    170 => [
         'n_code' => '3396935661',
         'pc_name' => 'AB-HA-P1-4',
         'type' => 'pc',
@@ -3592,7 +3592,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    171 => [
         'n_code' => '7791984638',
         'pc_name' => 'AB-HA-P1-MAMA',
         'type' => 'pc',
@@ -3613,8 +3613,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '8769116512',
+    172 => [
+        'n_code' => '3638502083',
         'pc_name' => 'AB-HA-PAZIR',
         'type' => 'pc',
         'os' => '7 Windows',
@@ -3634,7 +3634,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    173 => [
         'n_code' => '0469628954',
         'pc_name' => 'AB-HA-RAVAN',
         'type' => 'pc',
@@ -3655,8 +3655,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '6040795544',
+    174 => [
+        'n_code' => '0194615805',
         'pc_name' => 'AB-HA-TAGHZIE',
         'type' => 'pc',
         'os' => '10 Windows',
@@ -3676,8 +3676,8 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '8795091164',
+    175 => [
+        'n_code' => '5853069495',
         'pc_name' => 'AB-HERASAT1',
         'type' => 'pc',
         'os' => '10 Windows',
@@ -3697,7 +3697,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    176 => [
         'n_code' => '5853069495',
         'pc_name' => 'AB-HERASAT2',
         'type' => 'pc',
@@ -3718,7 +3718,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    177 => [
         'n_code' => '2880074291',
         'pc_name' => 'AB-HESABDAR2',
         'type' => 'pc',
@@ -3739,8 +3739,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '6841163278',
+    178 => [
+        'n_code' => '1042243783',
         'pc_name' => 'TIMEX-HIDAJ',
         'type' => 'timex',
         'os' => null,
@@ -3760,7 +3760,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    179 => [
         'n_code' => '5565593825',
         'pc_name' => 'TIMEX-SAEEN',
         'type' => 'timex',
@@ -3781,7 +3781,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    180 => [
         'n_code' => '7304479598',
         'pc_name' => 'TIMEX-AMIDABAD',
         'type' => 'timex',
@@ -3802,8 +3802,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '9825616823',
+    181 => [
+        'n_code' => '5565593825',
         'pc_name' => 'POS-SAEEN',
         'type' => 'pos',
         'os' => null,
@@ -3823,8 +3823,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '7214645629',
+    182 => [
+        'n_code' => '4411015056',
         'pc_name' => 'ZUMS-SAEENTOAMID',
         'type' => 'wireless',
         'os' => null,
@@ -3844,8 +3844,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '6596377982',
+    183 => [
+        'n_code' => '4411015056',
         'pc_name' => 'ZUMS-AMIDABAD',
         'type' => 'wireless',
         'os' => null,
@@ -3865,8 +3865,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '1337953332',
+    184 => [
+        'n_code' => '4411015056',
         'pc_name' => 'ZUMS-ABHAR',
         'type' => 'wireless',
         'os' => null,
@@ -3886,8 +3886,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '6900633021',
+    185 => [
+        'n_code' => '4411015056',
         'pc_name' => 'ZUMS-SAEEN',
         'type' => 'wireless',
         'os' => null,
@@ -3907,8 +3907,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '0489305416',
+    186 => [
+        'n_code' => '4411015056',
         'pc_name' => 'ZUMS-HIDAJ',
         'type' => 'wireless',
         'os' => null,
@@ -3928,8 +3928,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '1744628326',
+    187 => [
+        'n_code' => '4411015056',
         'pc_name' => 'SAEEN2HIDAJ',
         'type' => 'wireless',
         'os' => null,
@@ -3949,8 +3949,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '7255225691',
+    188 => [
+        'n_code' => '3711503626',
         'pc_name' => 'POS-AMIDABAD',
         'type' => 'pos',
         'os' => null,
@@ -3970,7 +3970,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    189 => [
         'n_code' => '1042243783',
         'pc_name' => 'POS-HIDAJ',
         'type' => 'pos',
@@ -3991,7 +3991,7 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
+    190 => [
         'n_code' => '3445542150',
         'pc_name' => 'AB-HESABDAR3',
         'type' => 'pc',
@@ -4012,7 +4012,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    191 => [
         'n_code' => '4100979710',
         'pc_name' => 'AB-HESABDAR4',
         'type' => 'pc',
@@ -4033,7 +4033,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    192 => [
         'n_code' => '8538423207',
         'pc_name' => 'AB-HESABDAR6',
         'type' => 'pc',
@@ -4054,7 +4054,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    193 => [
         'n_code' => '2187299125',
         'pc_name' => 'MA-HESABDAR7',
         'type' => 'pc',
@@ -4075,8 +4075,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '5321226311',
+    194 => [
+        'n_code' => '3638502083',
         'pc_name' => 'POS-HOSEINABAD',
         'type' => 'pos',
         'os' => null,
@@ -4096,7 +4096,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    195 => [
         'n_code' => '0044234488',
         'pc_name' => 'AB-HESARQAJAR',
         'type' => 'pc',
@@ -4117,8 +4117,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '4257493814',
+    196 => [
+        'n_code' => '1661504322',
         'pc_name' => 'POS-ALAEI',
         'type' => 'pos',
         'os' => null,
@@ -4138,7 +4138,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    197 => [
         'n_code' => '1154765916',
         'pc_name' => 'AB-HI-BH1',
         'type' => 'pc',
@@ -4159,7 +4159,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    198 => [
         'n_code' => '3001348444',
         'pc_name' => 'MA-HI-BM',
         'type' => 'pc',
@@ -4180,7 +4180,7 @@ return [
         'mark' => false,
         'clean_at' => '2025-01-01',
     ],
-    [
+    199 => [
         'n_code' => '1542444780',
         'pc_name' => 'POS-HIDAJ-DRUG',
         'type' => 'pos',
@@ -4201,7 +4201,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    200 => [
         'n_code' => '8708178874',
         'pc_name' => 'AB-HI-DENT',
         'type' => 'pc',
@@ -4222,7 +4222,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    201 => [
         'n_code' => '8913560341',
         'pc_name' => 'AB-HI-DRLAP',
         'type' => 'pc',
@@ -4243,8 +4243,8 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '8443265388',
+    202 => [
+        'n_code' => '1542444780',
         'pc_name' => 'AB-HI-DRUG',
         'type' => 'pc',
         'os' => '10 Windows',
@@ -4264,7 +4264,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    203 => [
         'n_code' => '5475646225',
         'pc_name' => 'AB-HI-LAB',
         'type' => 'pc',
@@ -4285,7 +4285,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    204 => [
         'n_code' => '2048435268',
         'pc_name' => 'POS-17SHAHRIVAR',
         'type' => 'pos',
@@ -4306,7 +4306,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    205 => [
         'n_code' => '3815237976',
         'pc_name' => 'AB-HI-P1-1',
         'type' => 'pc',
@@ -4327,7 +4327,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    206 => [
         'n_code' => '2930884382',
         'pc_name' => 'AB-HI-P1-2',
         'type' => 'pc',
@@ -4348,7 +4348,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    207 => [
         'n_code' => '3208708291',
         'pc_name' => 'MA-HI-P1-3',
         'type' => 'pc',
@@ -4369,7 +4369,7 @@ return [
         'mark' => false,
         'clean_at' => '2025-04-01',
     ],
-    [
+    208 => [
         'n_code' => '7250888615',
         'pc_name' => 'AB-HI-P1-MAMA',
         'type' => 'pc',
@@ -4390,8 +4390,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '6628318509',
+    209 => [
+        'n_code' => '1388927010',
         'pc_name' => 'AB-HI-P2-1',
         'type' => 'pc',
         'os' => '7 Windows',
@@ -4411,7 +4411,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    210 => [
         'n_code' => '1388927010',
         'pc_name' => 'AB-HI-P2-3',
         'type' => 'pc',
@@ -4432,8 +4432,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '7059679829',
+    211 => [
+        'n_code' => '1388927010',
         'pc_name' => 'AB-HI-P2-MAMA',
         'type' => 'pc',
         'os' => '10 Windows',
@@ -4453,7 +4453,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    212 => [
         'n_code' => '1131618424',
         'pc_name' => 'AB-HI-PAZIRESH',
         'type' => 'pc',
@@ -4474,7 +4474,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    213 => [
         'n_code' => '4479052940',
         'pc_name' => 'AB-HI-RAVAN',
         'type' => 'pc',
@@ -4495,8 +4495,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '9000409738',
+    214 => [
+        'n_code' => '0511241192',
         'pc_name' => 'AB-HI-TAGHZIE',
         'type' => 'pc',
         'os' => '7 Windows',
@@ -4516,8 +4516,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '1564890175',
+    215 => [
+        'n_code' => '4400176134',
         'pc_name' => 'MA-IT2',
         'type' => 'pc',
         'os' => '10 Windows',
@@ -4537,7 +4537,7 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
+    216 => [
         'n_code' => '0823221971',
         'pc_name' => 'AB-JEDAGHIE',
         'type' => 'pc',
@@ -4558,8 +4558,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '9421439635',
+    217 => [
+        'n_code' => '7013736830',
         'pc_name' => 'AB-KABOOD1',
         'type' => 'pc',
         'os' => '7 Windows',
@@ -4579,7 +4579,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    218 => [
         'n_code' => '4637532573',
         'pc_name' => 'AB-KG1',
         'type' => 'pc',
@@ -4600,8 +4600,8 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '4923344268',
+    219 => [
+        'n_code' => '1768095979',
         'pc_name' => 'AB-KG2',
         'type' => 'pc',
         'os' => '7 Windows',
@@ -4621,7 +4621,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    220 => [
         'n_code' => '0704123927',
         'pc_name' => 'AB-KG3',
         'type' => 'pc',
@@ -4642,7 +4642,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    221 => [
         'n_code' => '8750587141',
         'pc_name' => 'MA-KG5',
         'type' => 'pc',
@@ -4663,7 +4663,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    222 => [
         'n_code' => '1640564232',
         'pc_name' => 'MA-KHADAMAT',
         'type' => 'pc',
@@ -4684,7 +4684,7 @@ return [
         'mark' => false,
         'clean_at' => '2025-04-01',
     ],
-    [
+    223 => [
         'n_code' => '1951060045',
         'pc_name' => 'AB-KHALIFEHESAR',
         'type' => 'pc',
@@ -4705,7 +4705,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    224 => [
         'n_code' => '4833607836',
         'pc_name' => 'AB-KHORASANLOO1',
         'type' => 'pc',
@@ -4726,8 +4726,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '8314859353',
+    225 => [
+        'n_code' => '4833607836',
         'pc_name' => 'AB-KHORASANLOO2',
         'type' => 'pc',
         'os' => '7 Windows',
@@ -4747,7 +4747,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    226 => [
         'n_code' => '7073473564',
         'pc_name' => 'AB-KHOSHNAM',
         'type' => 'pc',
@@ -4768,7 +4768,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    227 => [
         'n_code' => '0422790069',
         'pc_name' => 'AB-KINEVARS1',
         'type' => 'pc',
@@ -4789,8 +4789,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '0893529961',
+    228 => [
+        'n_code' => '0422790069',
         'pc_name' => 'AB-KINEVARS2',
         'type' => 'pc',
         'os' => '7 Windows',
@@ -4810,7 +4810,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    229 => [
         'n_code' => '3199279907',
         'pc_name' => 'MA-KOOHZIN',
         'type' => 'pc',
@@ -4831,7 +4831,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    230 => [
         'n_code' => '3315809958',
         'pc_name' => 'AB-LAB',
         'type' => 'pc',
@@ -4852,7 +4852,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    231 => [
         'n_code' => '6981210379',
         'pc_name' => 'MA-M5-BH',
         'type' => 'pc',
@@ -4873,7 +4873,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    232 => [
         'n_code' => '4958622329',
         'pc_name' => 'AB-M5-BM',
         'type' => 'pc',
@@ -4894,7 +4894,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    233 => [
         'n_code' => '3849480816',
         'pc_name' => 'AB-M5-DENT',
         'type' => 'pc',
@@ -4915,7 +4915,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    234 => [
         'n_code' => '4371537402',
         'pc_name' => 'MA-M5-DR',
         'type' => 'pc',
@@ -4936,7 +4936,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    235 => [
         'n_code' => '0309244869',
         'pc_name' => 'AB-M5-P1-1',
         'type' => 'pc',
@@ -4957,7 +4957,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    236 => [
         'n_code' => '8431612447',
         'pc_name' => 'AB-M5-P1-2',
         'type' => 'pc',
@@ -4978,7 +4978,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    237 => [
         'n_code' => '1230327935',
         'pc_name' => 'MA-M5-P1-3',
         'type' => 'pc',
@@ -4999,7 +4999,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    238 => [
         'n_code' => '0856802641',
         'pc_name' => 'AB-M5-P1-5',
         'type' => 'pc',
@@ -5020,7 +5020,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    239 => [
         'n_code' => '0593029708',
         'pc_name' => 'MA-M5-PAZIR',
         'type' => 'pc',
@@ -5041,7 +5041,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    240 => [
         'n_code' => '0394740924',
         'pc_name' => 'AB-M5-RAVAN',
         'type' => 'pc',
@@ -5062,7 +5062,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    241 => [
         'n_code' => '0194615805',
         'pc_name' => 'AB-M5-TAGHZIE',
         'type' => 'pc',
@@ -5083,7 +5083,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    242 => [
         'n_code' => '9788856562',
         'pc_name' => 'AB-MADARES',
         'type' => 'pc',
@@ -5104,7 +5104,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    243 => [
         'n_code' => '8360435700',
         'pc_name' => 'AB-MAHESTAN',
         'type' => 'pc',
@@ -5125,7 +5125,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    244 => [
         'n_code' => '2435609123',
         'pc_name' => 'AB-MEIMONDARE1',
         'type' => 'pc',
@@ -5146,8 +5146,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '7096738821',
+    245 => [
+        'n_code' => '2435609123',
         'pc_name' => 'AB-MEIMONDARE2',
         'type' => 'pc',
         'os' => '7 Windows',
@@ -5167,7 +5167,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    246 => [
         'n_code' => '8176867047',
         'pc_name' => 'AB-NAYJOOK',
         'type' => 'pc',
@@ -5188,7 +5188,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    247 => [
         'n_code' => '9594119079',
         'pc_name' => 'AB-NEGAHBANI',
         'type' => 'pc',
@@ -5209,7 +5209,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    248 => [
         'n_code' => '3439994560',
         'pc_name' => 'MA-NEZARAT',
         'type' => 'pc',
@@ -5230,8 +5230,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '8417615870',
+    249 => [
+        'n_code' => '3804404003',
         'pc_name' => 'AB-NOORIN1',
         'type' => 'pc',
         'os' => '10 Windows',
@@ -5251,7 +5251,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    250 => [
         'n_code' => '1768095979',
         'pc_name' => 'AB-OMUMI',
         'type' => 'pc',
@@ -5272,8 +5272,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '3587632592',
+    251 => [
+        'n_code' => '2633875331',
         'pc_name' => 'AB-PIRSAGHA1',
         'type' => 'pc',
         'os' => '10 Windows',
@@ -5293,7 +5293,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    252 => [
         'n_code' => '2633875331',
         'pc_name' => 'MA-PIRSAGHA2',
         'type' => 'pc',
@@ -5314,7 +5314,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    253 => [
         'n_code' => '2406479187',
         'pc_name' => 'MA-PIRSAGHA3',
         'type' => 'pc',
@@ -5335,7 +5335,7 @@ return [
         'mark' => false,
         'clean_at' => '2025-05-01',
     ],
-    [
+    254 => [
         'n_code' => '4130770251',
         'pc_name' => 'MA-RAVABET',
         'type' => 'pc',
@@ -5356,7 +5356,7 @@ return [
         'mark' => false,
         'clean_at' => '2025-09-15',
     ],
-    [
+    255 => [
         'n_code' => '3434414000',
         'pc_name' => 'AB-RAVAN',
         'type' => 'pc',
@@ -5377,8 +5377,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '4779759556',
+    256 => [
+        'n_code' => '3434414000',
         'pc_name' => 'AB-RAVAN-LAP',
         'type' => 'pc',
         'os' => '10 Windows',
@@ -5398,7 +5398,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    257 => [
         'n_code' => '3017826544',
         'pc_name' => 'MA-RAVAN2',
         'type' => 'laptop',
@@ -5419,8 +5419,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '3595556089',
+    258 => [
+        'n_code' => '2048435268',
         'pc_name' => 'TIMEX-17SHAHRIVAR',
         'type' => 'timex',
         'os' => null,
@@ -5440,7 +5440,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    259 => [
         'n_code' => '3638502083',
         'pc_name' => 'TIMEX-HOSEINABAD',
         'type' => 'timex',
@@ -5461,8 +5461,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '7405842456',
+    260 => [
+        'n_code' => '6275537615',
         'pc_name' => 'AB-RIASAT',
         'type' => 'pc',
         'os' => '10 Windows',
@@ -5482,8 +5482,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '6113706339',
+    261 => [
+        'n_code' => '1661504322',
         'pc_name' => 'TIMEX-ALAEI',
         'type' => 'timex',
         'os' => null,
@@ -5503,8 +5503,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '8351004634',
+    262 => [
+        'n_code' => '6023402899',
         'pc_name' => 'AB-SA-BH',
         'type' => 'pc',
         'os' => '7 Windows',
@@ -5524,7 +5524,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    263 => [
         'n_code' => '3413904461',
         'pc_name' => 'MA-SA-BM',
         'type' => 'pc',
@@ -5545,7 +5545,7 @@ return [
         'mark' => false,
         'clean_at' => '2025-12-28',
     ],
-    [
+    264 => [
         'n_code' => '2016508711',
         'pc_name' => 'AB-SA-DENT',
         'type' => 'pc',
@@ -5566,7 +5566,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    265 => [
         'n_code' => '9840830480',
         'pc_name' => 'MA-SA-DR',
         'type' => 'pc',
@@ -5587,7 +5587,7 @@ return [
         'mark' => false,
         'clean_at' => '2026-01-10',
     ],
-    [
+    266 => [
         'n_code' => '3154626575',
         'pc_name' => 'AB-SA-DR-LAP',
         'type' => 'pc',
@@ -5608,8 +5608,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '6250641742',
+    267 => [
+        'n_code' => '4411015056',
         'pc_name' => 'ZUMS-ARQAVAN',
         'type' => 'wireless',
         'os' => null,
@@ -5629,8 +5629,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '1789329295',
+    268 => [
+        'n_code' => '4411015056',
         'pc_name' => 'MIKROTIK',
         'type' => 'wireless',
         'os' => null,
@@ -5650,8 +5650,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '0194721557',
+    269 => [
+        'n_code' => '4411015056',
         'pc_name' => 'ALAYI',
         'type' => 'wireless',
         'os' => null,
@@ -5671,8 +5671,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '5605620206',
+    270 => [
+        'n_code' => '4411015056',
         'pc_name' => '17SHAHRIVAR-CP',
         'type' => 'wireless',
         'os' => null,
@@ -5692,8 +5692,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '7443936669',
+    271 => [
+        'n_code' => '4411015056',
         'pc_name' => 'HOSEINABAD-CP',
         'type' => 'wireless',
         'os' => null,
@@ -5713,7 +5713,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    272 => [
         'n_code' => '0402823035',
         'pc_name' => 'AB-SA-DRUG',
         'type' => 'pc',
@@ -5734,7 +5734,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    273 => [
         'n_code' => '9682305473',
         'pc_name' => 'AB-SA-LAB',
         'type' => 'pc',
@@ -5755,7 +5755,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    274 => [
         'n_code' => '7203058569',
         'pc_name' => 'AB-SA-MAMA',
         'type' => 'pc',
@@ -5776,7 +5776,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    275 => [
         'n_code' => '6968376736',
         'pc_name' => 'AB-SA-NAZER',
         'type' => 'pc',
@@ -5797,7 +5797,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    276 => [
         'n_code' => '1934769266',
         'pc_name' => 'AB-SA-P2-7',
         'type' => 'pc',
@@ -5818,7 +5818,7 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
+    277 => [
         'n_code' => '7471819100',
         'pc_name' => 'MA-SA-P2-3',
         'type' => 'pc',
@@ -5839,7 +5839,7 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
+    278 => [
         'n_code' => '9752625268',
         'pc_name' => 'MA-SA-P2-2',
         'type' => 'pc',
@@ -5860,7 +5860,7 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
+    279 => [
         'n_code' => '6145865231',
         'pc_name' => 'AB-SA-P2-1',
         'type' => 'pc',
@@ -5881,7 +5881,7 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
+    280 => [
         'n_code' => '9076043441',
         'pc_name' => 'MA-SA-P2-9',
         'type' => 'pc',
@@ -5902,7 +5902,7 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
+    281 => [
         'n_code' => '2802361910',
         'pc_name' => 'MA-SA-P2-10',
         'type' => 'pc',
@@ -5923,7 +5923,7 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
+    282 => [
         'n_code' => '7194430462',
         'pc_name' => 'MA-SA-PAZIR',
         'type' => 'pc',
@@ -5944,7 +5944,7 @@ return [
         'mark' => false,
         'clean_at' => '2025-12-30',
     ],
-    [
+    283 => [
         'n_code' => '6190353842',
         'pc_name' => 'AB-SA-RAVAN',
         'type' => 'pc',
@@ -5965,7 +5965,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    284 => [
         'n_code' => '9368478133',
         'pc_name' => 'AB-SERAJ2',
         'type' => 'pc',
@@ -5986,7 +5986,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    285 => [
         'n_code' => '8271329447',
         'pc_name' => 'MA-SERAJ3',
         'type' => 'pc',
@@ -6007,7 +6007,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    286 => [
         'n_code' => '3251213145',
         'pc_name' => 'AB-SERAJ4',
         'type' => 'pc',
@@ -6028,7 +6028,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    287 => [
         'n_code' => '5582249317',
         'pc_name' => 'MA-SERAJ-LAP',
         'type' => 'laptop',
@@ -6049,8 +6049,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '1442077692',
+    288 => [
+        'n_code' => '4411015056',
         'pc_name' => 'AB-SHARE',
         'type' => 'PC',
         'os' => 'Server 2022',
@@ -6070,8 +6070,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '7456749330',
+    289 => [
+        'n_code' => '6111976649',
         'pc_name' => 'AB-SHARIF-BH',
         'type' => 'pc',
         'os' => '7 Windows',
@@ -6091,7 +6091,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    290 => [
         'n_code' => '2957513884',
         'pc_name' => 'MA-SHARIF-BM',
         'type' => 'pc',
@@ -6112,7 +6112,7 @@ return [
         'mark' => true,
         'clean_at' => '2025-12-30',
     ],
-    [
+    291 => [
         'n_code' => '2417321738',
         'pc_name' => 'MA-SHARIF-DR',
         'type' => 'pc',
@@ -6133,7 +6133,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    292 => [
         'n_code' => '3214067344',
         'pc_name' => 'AB-SHARIF-DRUG',
         'type' => 'pc',
@@ -6154,8 +6154,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '8818371816',
+    293 => [
+        'n_code' => '7765148494',
         'pc_name' => 'AB-SHARIF-MAMA',
         'type' => 'pc',
         'os' => '10 Windows',
@@ -6175,7 +6175,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    294 => [
         'n_code' => '4449657354',
         'pc_name' => 'AB-SHARIF-P2-1',
         'type' => 'pc',
@@ -6196,8 +6196,8 @@ return [
         'mark' => true,
         'clean_at' => '2025-12-30',
     ],
-    [
-        'n_code' => '5793171632',
+    295 => [
+        'n_code' => '5616886406',
         'pc_name' => 'AB-SHARIF-P2-2',
         'type' => 'pc',
         'os' => '7 Windows',
@@ -6217,7 +6217,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    296 => [
         'n_code' => '5616886406',
         'pc_name' => 'AB-SHARIF-P2-3',
         'type' => 'pc',
@@ -6238,7 +6238,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    297 => [
         'n_code' => '0704917442',
         'pc_name' => 'AB-SHARIF-PAZIR',
         'type' => 'pc',
@@ -6259,7 +6259,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    298 => [
         'n_code' => '6673928300',
         'pc_name' => 'AB-SHARIF-RAVAN',
         'type' => 'pc',
@@ -6280,7 +6280,7 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
+    299 => [
         'n_code' => '1254889481',
         'pc_name' => 'SW-GHERVE',
         'type' => 'switch',
@@ -6301,8 +6301,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '6252662815',
+    300 => [
+        'n_code' => '0704917442',
         'pc_name' => 'TIMEX-SHARIFABAD',
         'type' => 'timex',
         'os' => null,
@@ -6322,8 +6322,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '7498645938',
+    301 => [
+        'n_code' => '1254889481',
         'pc_name' => 'TIMEX-GHERVE',
         'type' => 'timex',
         'os' => null,
@@ -6343,8 +6343,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '8735241553',
+    302 => [
+        'n_code' => '4411015056',
         'pc_name' => 'AP-E',
         'type' => 'wireless',
         'os' => null,
@@ -6364,8 +6364,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '1180270259',
+    303 => [
+        'n_code' => '4411015056',
         'pc_name' => 'GHERVE-DAKAL-CP',
         'type' => 'wireless',
         'os' => null,
@@ -6385,8 +6385,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '9695626944',
+    304 => [
+        'n_code' => '4411015056',
         'pc_name' => 'AP-GHERVE-DAKAL',
         'type' => 'wireless',
         'os' => null,
@@ -6406,8 +6406,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '4937324249',
+    305 => [
+        'n_code' => '4411015056',
         'pc_name' => 'GHERVE-CP',
         'type' => 'wireless',
         'os' => null,
@@ -6427,7 +6427,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    306 => [
         'n_code' => '5599740720',
         'pc_name' => 'AB-SH-BH1',
         'type' => 'pc',
@@ -6448,8 +6448,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '3186731164',
+    307 => [
+        'n_code' => '4411015056',
         'pc_name' => 'DARESAJIN',
         'type' => 'wireless',
         'os' => null,
@@ -6469,8 +6469,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '9134433967',
+    308 => [
+        'n_code' => '4411015056',
         'pc_name' => 'SHARIFABAD',
         'type' => 'wireless',
         'os' => null,
@@ -6490,7 +6490,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    309 => [
         'n_code' => '6111976649',
         'pc_name' => 'MA-SH-BH2',
         'type' => 'pc',
@@ -6511,7 +6511,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    310 => [
         'n_code' => '3156581654',
         'pc_name' => 'AB-SH-BM',
         'type' => 'pc',
@@ -6532,7 +6532,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    311 => [
         'n_code' => '7446978629',
         'pc_name' => 'AB-SH-DR',
         'type' => 'pc',
@@ -6553,7 +6553,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    312 => [
         'n_code' => '7765148494',
         'pc_name' => 'AB-SH-MAMA',
         'type' => 'pc',
@@ -6574,8 +6574,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '6484806888',
+    313 => [
+        'n_code' => '2776511798',
         'pc_name' => 'AB-SH-NAZER',
         'type' => 'pc',
         'os' => '10 Windows',
@@ -6595,7 +6595,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    314 => [
         'n_code' => '9128589266',
         'pc_name' => 'MA-SH-P1-1',
         'type' => 'pc',
@@ -6616,7 +6616,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    315 => [
         'n_code' => '6188525973',
         'pc_name' => 'AB-SH-P1-2',
         'type' => 'pc',
@@ -6637,7 +6637,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    316 => [
         'n_code' => '3556862374',
         'pc_name' => 'AB-SH-P1-MAMA',
         'type' => 'pc',
@@ -6658,8 +6658,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '9218734259',
+    317 => [
+        'n_code' => '1042243783',
         'pc_name' => 'POS-SHENAT',
         'type' => 'pos',
         'os' => null,
@@ -6679,8 +6679,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '5423084483',
+    318 => [
+        'n_code' => '0702327630',
         'pc_name' => 'AB-SH-P2-1',
         'type' => 'pc',
         'os' => '7 Windows',
@@ -6700,8 +6700,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '9459219946',
+    319 => [
+        'n_code' => '0702327630',
         'pc_name' => 'AB-SH-P2-2',
         'type' => 'pc',
         'os' => '7 Windows',
@@ -6721,8 +6721,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '1026846590',
+    320 => [
+        'n_code' => '0702327630',
         'pc_name' => 'AB-SH-P2-3',
         'type' => 'pc',
         'os' => '7 Windows',
@@ -6742,8 +6742,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '6756573418',
+    321 => [
+        'n_code' => '0702327630',
         'pc_name' => 'AB-SH-P2-4',
         'type' => 'pc',
         'os' => '7 Windows',
@@ -6763,7 +6763,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    322 => [
         'n_code' => '0702327630',
         'pc_name' => 'AB-SH-P2-5',
         'type' => 'pc',
@@ -6784,7 +6784,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    323 => [
         'n_code' => '3241918201',
         'pc_name' => 'POS-TAJMI',
         'type' => 'pos',
@@ -6805,8 +6805,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '4102608425',
+    324 => [
+        'n_code' => '1042243783',
         'pc_name' => 'AB-SH-PAZIR',
         'type' => 'pc',
         'os' => '7 Windows',
@@ -6826,7 +6826,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    325 => [
         'n_code' => '0787287830',
         'pc_name' => 'AB-SH-RAVAN',
         'type' => 'pc',
@@ -6847,7 +6847,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    326 => [
         'n_code' => '1628614181',
         'pc_name' => 'AB-SH-TAGHZIE',
         'type' => 'pc',
@@ -6868,7 +6868,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    327 => [
         'n_code' => '5781207723',
         'pc_name' => 'MA-SH-TAJ1',
         'type' => 'pc',
@@ -6889,8 +6889,8 @@ return [
         'mark' => false,
         'clean_at' => '2025-04-22',
     ],
-    [
-        'n_code' => '4020196380',
+    328 => [
+        'n_code' => '1042243783',
         'pc_name' => 'TIMEX-SHENAT',
         'type' => 'timex',
         'os' => null,
@@ -6910,8 +6910,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '2757359037',
+    329 => [
+        'n_code' => '4411015056',
         'pc_name' => 'SHENAT-CP',
         'type' => 'wireless',
         'os' => null,
@@ -6931,8 +6931,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '1726206356',
+    330 => [
+        'n_code' => '4411015056',
         'pc_name' => 'AP-NE',
         'type' => 'wireless',
         'os' => null,
@@ -6952,7 +6952,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    331 => [
         'n_code' => '0358954975',
         'pc_name' => 'MA-TK1',
         'type' => 'pc',
@@ -6973,7 +6973,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    332 => [
         'n_code' => '6616156116',
         'pc_name' => 'AB-TK2',
         'type' => 'pc',
@@ -6994,7 +6994,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    333 => [
         'n_code' => '2003915963',
         'pc_name' => 'AB-TK3',
         'type' => 'pc',
@@ -7015,7 +7015,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    334 => [
         'n_code' => '0171111775',
         'pc_name' => 'AB-TOODEBIN',
         'type' => 'pc',
@@ -7036,8 +7036,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '4843811294',
+    335 => [
+        'n_code' => '3882026042',
         'pc_name' => 'POS-AZMARKAZI',
         'type' => 'pos',
         'os' => null,
@@ -7057,8 +7057,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '3705721454',
+    336 => [
+        'n_code' => '1665814324',
         'pc_name' => 'AB-YENGIKAND',
         'type' => 'pc',
         'os' => '7 Windows',
@@ -7078,7 +7078,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    337 => [
         'n_code' => '3997173694',
         'pc_name' => 'MA-ZAREBASH',
         'type' => 'pc',
@@ -7099,7 +7099,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    338 => [
         'n_code' => '8868704418',
         'pc_name' => 'CITYHIVSERVER',
         'type' => 'pc',
@@ -7120,7 +7120,7 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
+    339 => [
         'n_code' => '2352001315',
         'pc_name' => 'MA-17SH-GENETIC',
         'type' => 'pc',
@@ -7141,7 +7141,7 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
+    340 => [
         'n_code' => '5153893628',
         'pc_name' => 'MA-17SH-LAB1',
         'type' => 'pc',
@@ -7162,7 +7162,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    341 => [
         'n_code' => '8713464502',
         'pc_name' => 'MA-17SH-LAB-CEL',
         'type' => 'pc',
@@ -7183,7 +7183,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    342 => [
         'n_code' => '8105641936',
         'pc_name' => 'MA-17SH-MAMA',
         'type' => 'pc',
@@ -7204,7 +7204,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    343 => [
         'n_code' => '4387816483',
         'pc_name' => 'MA-17SH-P1-1',
         'type' => 'pc',
@@ -7225,7 +7225,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    344 => [
         'n_code' => '7622156913',
         'pc_name' => 'MA-17SH-P1-2',
         'type' => 'pc',
@@ -7246,7 +7246,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    345 => [
         'n_code' => '4947335426',
         'pc_name' => 'MA-17SH-P1-4',
         'type' => 'pc',
@@ -7267,7 +7267,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    346 => [
         'n_code' => '1870206698',
         'pc_name' => 'MA-17SH-P1-5',
         'type' => 'pc',
@@ -7288,8 +7288,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '4509027520',
+    347 => [
+        'n_code' => '1144980630',
         'pc_name' => 'TIMEX-BEHVARZI',
         'type' => 'timex',
         'os' => null,
@@ -7309,7 +7309,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    348 => [
         'n_code' => '6934517814',
         'pc_name' => 'MA-17SH-P2-1',
         'type' => 'pc',
@@ -7330,7 +7330,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    349 => [
         'n_code' => '1145506818',
         'pc_name' => 'MA-17SH-P2-2',
         'type' => 'pc',
@@ -7351,7 +7351,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    350 => [
         'n_code' => '4923980957',
         'pc_name' => 'MA-17SH-P2-3',
         'type' => 'pc',
@@ -7372,7 +7372,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    351 => [
         'n_code' => '1183384639',
         'pc_name' => 'MA-AL-DIC1',
         'type' => 'pc',
@@ -7393,7 +7393,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    352 => [
         'n_code' => '1144980630',
         'pc_name' => 'SW-BEHVARZI2',
         'type' => 'switch',
@@ -7414,8 +7414,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '2174749544',
+    353 => [
+        'n_code' => '1144980630',
         'pc_name' => 'SW-BEHVARZI1',
         'type' => 'switch',
         'os' => 'Cisco 2960',
@@ -7435,8 +7435,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '7438806134',
+    354 => [
+        'n_code' => '1144980630',
         'pc_name' => 'SW-BEHVARZI3',
         'type' => 'switch',
         'os' => 'Cisco 2960',
@@ -7456,7 +7456,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    355 => [
         'n_code' => '0669782348',
         'pc_name' => 'MA-AL-DIC2',
         'type' => 'pc',
@@ -7477,7 +7477,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    356 => [
         'n_code' => '1032493646',
         'pc_name' => 'HA0-DIDEVAR',
         'type' => 'pc',
@@ -7498,7 +7498,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    357 => [
         'n_code' => '3153121492',
         'pc_name' => 'MA-AL-LAB1',
         'type' => 'pc',
@@ -7519,7 +7519,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    358 => [
         'n_code' => '2668126833',
         'pc_name' => 'MA-SERAJ1',
         'type' => 'pc',
@@ -7540,8 +7540,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '3881269995',
+    359 => [
+        'n_code' => '4411015056',
         'pc_name' => 'AP-BEHVARZI',
         'type' => 'wireless',
         'os' => null,
@@ -7561,8 +7561,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '1401969782',
+    360 => [
+        'n_code' => '4411015056',
         'pc_name' => 'CP-BEHVARZI',
         'type' => 'wireless',
         'os' => null,
@@ -7582,7 +7582,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    361 => [
         'n_code' => '5366039234',
         'pc_name' => 'TIMEX-M5',
         'type' => 'timex',
@@ -7603,7 +7603,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    362 => [
         'n_code' => '2624287132',
         'pc_name' => 'MA-AM-DRUG',
         'type' => 'pc',
@@ -7624,7 +7624,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    363 => [
         'n_code' => '7023318267',
         'pc_name' => 'MA-GOSTARESH6',
         'type' => 'pc',
@@ -7645,7 +7645,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    364 => [
         'n_code' => '7243730246',
         'pc_name' => 'MA-BEHVARZI9',
         'type' => 'pc',
@@ -7666,8 +7666,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '5148696736',
+    365 => [
+        'n_code' => '4411015056',
         'pc_name' => 'AP-N',
         'type' => 'wireless',
         'os' => null,
@@ -7687,8 +7687,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '4012293251',
+    366 => [
+        'n_code' => '4411015056',
         'pc_name' => 'DARMANGAH-SHOMARE5',
         'type' => 'wireless',
         'os' => null,
@@ -7708,7 +7708,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    367 => [
         'n_code' => '4615376353',
         'pc_name' => 'MA-BEHVARZI-C1',
         'type' => 'pc',
@@ -7729,7 +7729,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    368 => [
         'n_code' => '1040002322',
         'pc_name' => 'MA-BEHVARZI-C10',
         'type' => 'pc',
@@ -7750,7 +7750,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    369 => [
         'n_code' => '1353882859',
         'pc_name' => 'MA-BEHVARZI10',
         'type' => 'pc',
@@ -7771,7 +7771,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    370 => [
         'n_code' => '3649407637',
         'pc_name' => 'MA-BEHVARZI-C12',
         'type' => 'pc',
@@ -7792,7 +7792,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    371 => [
         'n_code' => '4185389917',
         'pc_name' => 'MA-BEHVARZI-C2',
         'type' => 'pc',
@@ -7813,7 +7813,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    372 => [
         'n_code' => '9978726981',
         'pc_name' => 'MA-BEHVARZI-C3',
         'type' => 'pc',
@@ -7834,7 +7834,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    373 => [
         'n_code' => '7337465460',
         'pc_name' => 'MA-BEHVARZI-C4',
         'type' => 'pc',
@@ -7855,7 +7855,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    374 => [
         'n_code' => '6751146667',
         'pc_name' => 'MA-BEHVARZI-C5',
         'type' => 'pc',
@@ -7876,7 +7876,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    375 => [
         'n_code' => '1743337262',
         'pc_name' => 'MA-BEHVARZI-C6',
         'type' => 'pc',
@@ -7897,7 +7897,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    376 => [
         'n_code' => '8463246616',
         'pc_name' => 'MA-BEHVARZI-C7',
         'type' => 'pc',
@@ -7918,7 +7918,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    377 => [
         'n_code' => '7086221600',
         'pc_name' => 'MA-BEHVARZI-C8',
         'type' => 'pc',
@@ -7939,7 +7939,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    378 => [
         'n_code' => '0041368464',
         'pc_name' => 'MA-BEHVARZI-C9',
         'type' => 'pc',
@@ -7960,8 +7960,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '8948177824',
+    379 => [
+        'n_code' => '2020106280',
         'pc_name' => 'POS-DARESAJIN',
         'type' => 'pos',
         'os' => null,
@@ -7981,8 +7981,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '6239387026',
+    380 => [
+        'n_code' => '5366039234',
         'pc_name' => 'POS-M5',
         'type' => 'pos',
         'os' => null,
@@ -8002,7 +8002,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    381 => [
         'n_code' => '7346583322',
         'pc_name' => 'MA-BIMAVAGIR2',
         'type' => 'pc',
@@ -8023,7 +8023,7 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
+    382 => [
         'n_code' => '8014755843',
         'pc_name' => 'MA-BKH1',
         'type' => 'pc',
@@ -8044,7 +8044,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    383 => [
         'n_code' => '8034029554',
         'pc_name' => 'MA-BKH3',
         'type' => 'pc',
@@ -8065,8 +8065,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '6125880550',
+    384 => [
+        'n_code' => '0418283930',
         'pc_name' => 'MA-CHARGAR1',
         'type' => 'pc',
         'os' => '10 Windows',
@@ -8086,8 +8086,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '6527314397',
+    385 => [
+        'n_code' => '1254889481',
         'pc_name' => 'POS-GHERVE',
         'type' => 'pos',
         'os' => null,
@@ -8107,8 +8107,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '4258930640',
+    386 => [
+        'n_code' => '0704917442',
         'pc_name' => 'POS-SHARIFABAD',
         'type' => 'pos',
         'os' => null,
@@ -8128,7 +8128,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    387 => [
         'n_code' => '1712710318',
         'pc_name' => 'MA-CHARG-FORIAT',
         'type' => 'pc',
@@ -8149,7 +8149,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    388 => [
         'n_code' => '5786759979',
         'pc_name' => 'MA-EM-FORIAT1',
         'type' => 'pc',
@@ -8170,7 +8170,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    389 => [
         'n_code' => '3795669249',
         'pc_name' => 'MA-EM-FORIAT2',
         'type' => 'pc',
@@ -8191,7 +8191,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    390 => [
         'n_code' => '1618066617',
         'pc_name' => 'MA-EM-FORIAT3',
         'type' => 'pc',
@@ -8212,7 +8212,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    391 => [
         'n_code' => '6703325646',
         'pc_name' => 'MA-GH-FORIAT',
         'type' => 'pc',
@@ -8233,7 +8233,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    392 => [
         'n_code' => '8662428687',
         'pc_name' => 'MA-HA-DRUG',
         'type' => 'pc',
@@ -8254,7 +8254,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    393 => [
         'n_code' => '3202166802',
         'pc_name' => 'MA-HESABDAR1',
         'type' => 'pc',
@@ -8275,7 +8275,7 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
+    394 => [
         'n_code' => '0023548258',
         'pc_name' => 'MA-HI-FORIAT',
         'type' => 'pc',
@@ -8296,7 +8296,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    395 => [
         'n_code' => '0511241192',
         'pc_name' => 'MA-HI-TAGHZIE',
         'type' => 'pc',
@@ -8317,8 +8317,8 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '2485561494',
+    396 => [
+        'n_code' => '4411015056',
         'pc_name' => 'MA-IT1',
         'type' => 'pc',
         'os' => 'Server 2025',
@@ -8338,8 +8338,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '0894084201',
+    397 => [
+        'n_code' => '4411015056',
         'pc_name' => 'MA-IT-LAP',
         'type' => 'pc',
         'os' => '11 Windows',
@@ -8359,7 +8359,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    398 => [
         'n_code' => '7013736830',
         'pc_name' => 'MA-KABOOD2',
         'type' => 'pc',
@@ -8380,7 +8380,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    399 => [
         'n_code' => '2386431854',
         'pc_name' => 'MA-KG4',
         'type' => 'pc',
@@ -8401,7 +8401,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    400 => [
         'n_code' => '0890949089',
         'pc_name' => 'MA-KGB',
         'type' => 'pc',
@@ -8422,7 +8422,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    401 => [
         'n_code' => '7295450193',
         'pc_name' => 'MA-M5-P1-4',
         'type' => 'pc',
@@ -8443,7 +8443,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    402 => [
         'n_code' => '3804404003',
         'pc_name' => 'MA-NOORIN3',
         'type' => 'pc',
@@ -8464,7 +8464,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    403 => [
         'n_code' => '7135669744',
         'pc_name' => 'MA-SA-FORIAT',
         'type' => 'pc',
@@ -8485,7 +8485,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    404 => [
         'n_code' => '9918676176',
         'pc_name' => 'MA-SH2-FORIAT',
         'type' => 'pc',
@@ -8506,7 +8506,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    405 => [
         'n_code' => '6797970129',
         'pc_name' => 'MA-SH-P1-3',
         'type' => 'pc',
@@ -8527,7 +8527,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    406 => [
         'n_code' => '4233822426',
         'pc_name' => 'MA-SH-P3-1',
         'type' => 'pc',
@@ -8548,7 +8548,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    407 => [
         'n_code' => '0775202047',
         'pc_name' => 'MA-SH-P3-2',
         'type' => 'pc',
@@ -8569,7 +8569,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    408 => [
         'n_code' => '1174543268',
         'pc_name' => 'MA-SH-P3-3',
         'type' => 'pc',
@@ -8590,7 +8590,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    409 => [
         'n_code' => '3547110504',
         'pc_name' => 'MA-TAGHZIE1',
         'type' => 'pc',
@@ -8611,7 +8611,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    410 => [
         'n_code' => '4211923027',
         'pc_name' => 'ma-hi-parastar',
         'type' => 'pc',
@@ -8632,7 +8632,7 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
+    411 => [
         'n_code' => '0418283930',
         'pc_name' => 'MA-CHARGAR3',
         'type' => 'pc',
@@ -8653,7 +8653,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    412 => [
         'n_code' => '9455650876',
         'pc_name' => 'MA-MB',
         'type' => 'pc',
@@ -8674,7 +8674,7 @@ return [
         'mark' => true,
         'clean_at' => '2025-04-20',
     ],
-    [
+    413 => [
         'n_code' => '6023402899',
         'pc_name' => 'MA-HI-BH2',
         'type' => 'pc',
@@ -8695,7 +8695,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    414 => [
         'n_code' => '1750062174',
         'pc_name' => 'MA-DO-NAZER',
         'type' => 'pc',
@@ -8716,7 +8716,7 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
+    415 => [
         'n_code' => '0680102483',
         'pc_name' => 'MA-AL-LAB-AB',
         'type' => 'pc',
@@ -8737,7 +8737,7 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
+    416 => [
         'n_code' => '8150326198',
         'pc_name' => 'ma-ha-p1-5',
         'type' => 'pc',
@@ -8758,8 +8758,8 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '8711323848',
+    417 => [
+        'n_code' => '4411015056',
         'pc_name' => 'ma-ntopng',
         'type' => 'pc',
         'os' => 'Ubuntu',
@@ -8779,8 +8779,8 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '9105640956',
+    418 => [
+        'n_code' => '8271329447',
         'pc_name' => 'MA-SERAJ5',
         'type' => 'pc',
         'os' => '10 Windows',
@@ -8800,7 +8800,7 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
+    419 => [
         'n_code' => '9394233542',
         'pc_name' => 'MA-MB-LAP',
         'type' => 'laptop',
@@ -8821,8 +8821,8 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '9654245152',
+    420 => [
+        'n_code' => '4130770251',
         'pc_name' => 'MA-RAVABET-LAP',
         'type' => 'laptop',
         'os' => '10 Windows',
@@ -8842,7 +8842,7 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
+    421 => [
         'n_code' => '0088525442',
         'pc_name' => 'MA-SHARIF-LAP',
         'type' => 'laptop',
@@ -8863,7 +8863,7 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
+    422 => [
         'n_code' => '1479892061',
         'pc_name' => 'MA-DASHBOLAQ',
         'type' => 'pc',
@@ -8884,7 +8884,7 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
+    423 => [
         'n_code' => '7133884287',
         'pc_name' => 'MA-CHESHIN',
         'type' => 'pc',
@@ -8905,8 +8905,8 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '1229745560',
+    424 => [
+        'n_code' => '4411015056',
         'pc_name' => 'SW-D',
         'type' => 'switch',
         'os' => null,
@@ -8926,7 +8926,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    425 => [
         'n_code' => '4747075247',
         'pc_name' => 'MA-17SH-DR2',
         'type' => 'pc',
@@ -8947,7 +8947,7 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
+    426 => [
         'n_code' => '0046139862',
         'pc_name' => 'MA-ALG-LAB',
         'type' => 'pc',
@@ -8968,8 +8968,8 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '5989473877',
+    427 => [
+        'n_code' => '4411015056',
         'pc_name' => 'SW-F',
         'type' => 'switch',
         'os' => null,
@@ -8989,7 +8989,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    428 => [
         'n_code' => '9808950107',
         'pc_name' => 'MA-DRUG',
         'type' => 'pc',
@@ -9010,8 +9010,8 @@ return [
         'mark' => true,
         'clean_at' => '2026-02-08',
     ],
-    [
-        'n_code' => '1076329211',
+    429 => [
+        'n_code' => '4411015056',
         'pc_name' => 'MA-ZABBIX',
         'type' => 'vm',
         'os' => 'Ubuntu',
@@ -9031,8 +9031,8 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '5954796044',
+    430 => [
+        'n_code' => '4411015056',
         'pc_name' => 'MA-ALPINE',
         'type' => 'vm',
         'os' => null,
@@ -9052,7 +9052,7 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
+    431 => [
         'n_code' => '6544992892',
         'pc_name' => 'MA-SW-17SH',
         'type' => 'switch',
@@ -9073,8 +9073,8 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '4860576637',
+    432 => [
+        'n_code' => '4400176143',
         'pc_name' => 'MA-IT3',
         'type' => 'pc',
         'os' => '10 Windows',
@@ -9094,8 +9094,8 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '4667904819',
+    433 => [
+        'n_code' => '3241918201',
         'pc_name' => 'POS-TAJMI2',
         'type' => 'pos',
         'os' => null,
@@ -9115,7 +9115,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    434 => [
         'n_code' => '8757794488',
         'pc_name' => 'AB-17SH-BM1',
         'type' => 'pc',
@@ -9136,8 +9136,8 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '9785258294',
+    435 => [
+        'n_code' => '5565593825',
         'pc_name' => 'POS-SAEEN2',
         'type' => 'pos',
         'os' => null,
@@ -9157,7 +9157,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    436 => [
         'n_code' => '2652908314',
         'pc_name' => 'MA-17SH-LAB6',
         'type' => 'pc',
@@ -9178,8 +9178,8 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '3908766996',
+    437 => [
+        'n_code' => '4411015056',
         'pc_name' => 'MA-DOCKER',
         'type' => 'vm',
         'os' => 'Ubuntu',
@@ -9199,7 +9199,7 @@ return [
         'mark' => true,
         'clean_at' => null,
     ],
-    [
+    438 => [
         'n_code' => '2296158918',
         'pc_name' => 'MA-SARVJAHAN',
         'type' => 'pc',
@@ -9220,7 +9220,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    439 => [
         'n_code' => '1004468243',
         'pc_name' => 'MA-SA-KH-LAP',
         'type' => 'laptop',
@@ -9241,7 +9241,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    440 => [
         'n_code' => '5322410516',
         'pc_name' => 'MA-SA-PARASTAR',
         'type' => 'pc',
@@ -9262,7 +9262,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    441 => [
         'n_code' => '2254897489',
         'pc_name' => 'MA-M5-P1-7',
         'type' => 'laptop',
@@ -9283,8 +9283,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '4667904819',
+    442 => [
+        'n_code' => '3241918201',
         'pc_name' => 'MA-SH-TAJ2',
         'type' => 'pc',
         'os' => '10 Windows',
@@ -9304,8 +9304,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '6440103972',
+    443 => [
+        'n_code' => '3804404003',
         'pc_name' => 'MA-NOORIN4',
         'type' => 'pc',
         'os' => '10 Windows',
@@ -9325,8 +9325,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '2318720082',
+    444 => [
+        'n_code' => '3804404003',
         'pc_name' => 'MA-NOORIN-LAP',
         'type' => 'laptop',
         'os' => '10 Windows',
@@ -9346,7 +9346,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    445 => [
         'n_code' => '6396122181',
         'pc_name' => 'MA-HA-PARASTAR',
         'type' => 'pc',
@@ -9367,7 +9367,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    446 => [
         'n_code' => '3202166802',
         'pc_name' => 'MA-MALI-LAP',
         'type' => 'laptop',
@@ -9388,8 +9388,8 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
-        'n_code' => '1104523055',
+    447 => [
+        'n_code' => '6017126698',
         'pc_name' => 'MA-GH-KH4',
         'type' => 'pc',
         'os' => '10 Windows',
@@ -9409,7 +9409,7 @@ return [
         'mark' => false,
         'clean_at' => null,
     ],
-    [
+    448 => [
         'n_code' => '7029163337',
         'pc_name' => 'MA-AM-PARASTAR',
         'type' => 'pc',

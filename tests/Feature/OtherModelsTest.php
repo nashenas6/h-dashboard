@@ -6,8 +6,8 @@ use App\Models\Attachment;
 use App\Models\Person;
 use App\Models\TaskActivity;
 use App\Models\Ticket;
-use App\Models\TicketCommentReaction;
 use App\Models\TicketComment;
+use App\Models\TicketCommentReaction;
 use App\Models\Unit;
 use App\Models\User;
 use Database\Seeders\PermissionSeeder;
@@ -15,6 +15,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
+
+covers(Ticket::class);
 
 class OtherModelsTest extends TestCase
 {
@@ -48,6 +50,7 @@ class OtherModelsTest extends TestCase
     protected function createTicket(): Ticket
     {
         $user = $this->createUserWithUnit();
+
         return Ticket::create([
             'ticket_code' => 'TKT-001',
             'user_id' => $user->id,

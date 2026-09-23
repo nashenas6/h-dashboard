@@ -1,17 +1,24 @@
 <?php
-
 use App\Models\Estekhdam;
-use App\Models\Person;
+use App\Models\Person as PersonModel;
 use App\Models\Radif;
 use App\Models\Semat;
 use App\Models\Tahsil;
 use App\Models\Unit;
 use App\Services\AccessService;
+use App\Traits\PersianNormalizer;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Mary\Traits\Toast;
 
+/**
+ * Personnel management page (مدیریت پرسنل).
+ *
+ * Extracted from the anonymous class defined inline in
+ * resources/views/livewire/kargozini/person.blade.php so the component is
+ * testable in isolation and IDE-tooling friendly. Behavior is unchanged.
+ */
 return new class extends Component
 {
     use Toast;
@@ -48,19 +55,25 @@ return new class extends Component
     // List filter properties (#494) — kept separate from the create/edit form
     // properties ($u_id, $s_id, ...) so opening the edit form does not filter the list.
     public $filter_u_id;
+
     public $filter_s_id;
+
     public $filter_t_id;
+
     public $filter_e_id;
+
     public $filter_r_id;
+
     public bool $filterUnitModal = false;
+
     public bool $showFilters = false;
+
+    public array $sortBy = ['column' => 'id', 'direction' => 'asc'];
 
     public function clearFilters(): void
     {
         $this->reset(['filter_u_id', 'filter_s_id', 'filter_t_id', 'filter_e_id', 'filter_r_id', 'filterUnitModal']);
     }
-
-    public array $sortBy = ['column' => 'id', 'direction' => 'asc'];
 
     public function resetForm(): void
     {
@@ -74,12 +87,13 @@ return new class extends Component
         $this->formOpen = true;
     }
 
-    public function delete(Person $person): void
+    public function delete(PersonModel $person): void
     {
         // Check organizational scope
         $accessibleIds = app(AccessService::class)->accessibleUnitIds();
         if (! in_array($person->u_id, $accessibleIds)) {
             $this->error('شما مجاز به حذف این پرسنل نیستید.', position: 'toast-bottom');
+
             return;
         }
 
@@ -105,15 +119,16 @@ return new class extends Component
         ]);
 
         if ($this->editingId) {
-            $person = Person::findOrFail($this->editingId);
-            
+            $person = PersonModel::findOrFail($this->editingId);
+
             // Check organizational scope for update
             $accessibleIds = app(AccessService::class)->accessibleUnitIds();
             if (! in_array($person->u_id, $accessibleIds)) {
                 $this->error('شما مجاز به ویرایش این پرسنل نیستید.', position: 'toast-bottom');
+
                 return;
             }
-            
+
             $person->update([
                 'n_code' => $this->n_code,
                 'f_name' => $this->f_name,
@@ -136,10 +151,11 @@ return new class extends Component
             $accessibleIds = app(AccessService::class)->accessibleUnitIds();
             if (! in_array($this->u_id, $accessibleIds)) {
                 $this->error('شما مجاز به ثبت پرسنل در این واحد نیستید.', position: 'toast-bottom');
+
                 return;
             }
-            
-            $person = Person::create([
+
+            $person = PersonModel::create([
                 'n_code' => $this->n_code,
                 'f_name' => $this->f_name,
                 'l_name' => $this->l_name,
@@ -164,15 +180,16 @@ return new class extends Component
     public function editPerson($id): void
     {
         $this->resetValidation();
-        $person = Person::findOrFail($id);
-        
+        $person = PersonModel::findOrFail($id);
+
         // Check organizational scope
         $accessibleIds = app(AccessService::class)->accessibleUnitIds();
         if (! in_array($person->u_id, $accessibleIds)) {
             $this->error('شما مجاز به ویرایش این پرسنل نیستید.', position: 'toast-bottom');
+
             return;
         }
-        
+
         $this->editingId = (int) $id;
         $this->n_code = $person->n_code;
         $this->f_name = $person->f_name;
@@ -203,7 +220,7 @@ return new class extends Component
 
     public function persons(): LengthAwarePaginator
     {
-        $query = Person::query()
+        $query = PersonModel::query()
             ->accessible('u_id')
             ->withAggregate('tahsil', 'name')
             ->withAggregate('estekhdam', 'name')
@@ -212,10 +229,25 @@ return new class extends Component
             ->withAggregate('unit', 'name');
 
         if (! empty($this->search)) {
-            $search = \App\Traits\PersianNormalizer::normalizeForSearch($this->search);
-            $query->where(function ($q) use ($search) {
-                $q->where('n_code', 'LIKE', '%'.$search.'%')
-                    ->orWhereRaw("CONCAT(f_name, ' ', l_name) LIKE ?", ["%{$search}%"]);
+            // normalizeForQuery normalizes Persian/Arabic chars + escapes LIKE wildcards.
+            $search = PersianNormalizer::normalizeForQuery($this->search);
+
+            // Each whitespace-separated term must match (AND); within a term,
+            // any of n_code / "first last" / "last first" / unit name counts,
+            // so "عسگری مهدی" finds «مهدی عسگری» too (#494).
+            $terms = array_values(array_filter(explode(' ', $search), fn ($t) => $t !== ''));
+
+            $query->where(function ($q) use ($terms) {
+                foreach ($terms as $term) {
+                    $q->where(function ($tq) use ($term) {
+                        $tq->where('n_code', 'LIKE', '%'.$term.'%')
+                            ->orWhereRaw("CONCAT(f_name, ' ', l_name) LIKE ?", ["%{$term}%"])
+                            ->orWhereRaw("CONCAT(l_name, ' ', f_name) LIKE ?", ["%{$term}%"])
+                            ->orWhereHas('unit', function ($uq) use ($term) {
+                                $uq->where('name', 'LIKE', "%{$term}%");
+                            });
+                    });
+                }
             });
         }
 
@@ -278,7 +310,8 @@ return new class extends Component
             'filterUnitName' => $filterUnitName,
         ];
     }
-}; ?>
+};
+?>
 
 <div>
     <x-header title="مدیریت پرسنل" separator progress-indicator>

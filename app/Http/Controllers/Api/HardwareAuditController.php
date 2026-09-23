@@ -4,12 +4,14 @@ namespace App\Http\Controllers\Api;
 
 use App\Exports\HardwareAuditsExport;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UnitScopedRequest;
 use App\Models\Hardware;
 use App\Models\HardwareAudit;
+use App\Models\Person;
 use App\Observers\HardwareAuditObserver;
-use App\Services\AccessService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 use Morilog\Jalali\Jalalian;
 
@@ -18,7 +20,7 @@ class HardwareAuditController extends Controller
     /**
      * Display a paginated list of audits for a hardware item.
      */
-    public function index(Request $request, Hardware $hardware): JsonResponse
+    public function index(UnitScopedRequest $request, Hardware $hardware): JsonResponse
     {
         $this->assertAccessible($request, $hardware);
 
@@ -63,7 +65,7 @@ class HardwareAuditController extends Controller
     /**
      * Display a single audit record with full diff.
      */
-    public function show(Request $request, Hardware $hardware, HardwareAudit $audit): JsonResponse
+    public function show(UnitScopedRequest $request, Hardware $hardware, HardwareAudit $audit): JsonResponse
     {
         $this->assertAccessible($request, $hardware);
 
@@ -81,7 +83,7 @@ class HardwareAuditController extends Controller
     /**
      * Rollback a specific field to its previous value.
      */
-    public function rollback(Request $request, Hardware $hardware, HardwareAudit $audit): JsonResponse
+    public function rollback(UnitScopedRequest $request, Hardware $hardware, HardwareAudit $audit): JsonResponse
     {
         $this->assertAccessible($request, $hardware);
 
@@ -89,8 +91,9 @@ class HardwareAuditController extends Controller
             return response()->json(['message' => 'Audit not found for this hardware.'], 404);
         }
 
+        $allowed = (new Hardware)->getFillable();
         $request->validate([
-            'field' => 'required|string',
+            'field' => ['required', 'string', Rule::in($allowed)],
         ]);
 
         $changes = $audit->changes;
@@ -116,6 +119,18 @@ class HardwareAuditController extends Controller
         // Parse the old value back to its original type
         $restoredValue = $this->parseValueForRestore($oldValue, $request->field);
 
+        // Verify target unit is accessible when restoring n_code
+        if ($request->field === 'n_code' && $restoredValue !== null) {
+            $person = Person::where('n_code', $restoredValue)->first();
+            if (! $person) {
+                return response()->json(['message' => 'Person not found.'], 422);
+            }
+            $accessibleIds = $request->accessibleIds();
+            if (! in_array($person->u_id, $accessibleIds, true)) {
+                return response()->json(['message' => 'Cannot restore hardware to a person in an inaccessible unit.'], 403);
+            }
+        }
+
         // Update the hardware record
         $hardware->update([$request->field => $restoredValue]);
 
@@ -140,9 +155,89 @@ class HardwareAuditController extends Controller
     }
 
     /**
+     * Restore a fully-deleted hardware record from its 'created' audit entry.
+     *
+     * Looks up the HardwareAudit row (which survives hard deletes) and
+     * recreates the Hardware with the original field values.
+     */
+    public function restoreRecord(UnitScopedRequest $request, HardwareAudit $audit): JsonResponse
+    {
+        if ($audit->action !== 'created') {
+            return response()->json(['message' => 'Only "created" audits can be used to restore a record.'], 422);
+        }
+
+        // Verify the hardware was actually deleted. Use a direct query so this
+        // works whether or not the Hardware model uses SoftDeletes.
+        $exists = DB::table('hardwares')->where('id', $audit->hardware_id)->exists();
+        if ($exists) {
+            return response()->json(['message' => 'This hardware record still exists — use rollback instead.'], 422);
+        }
+
+        // Verify the audit is not orphaned (linked hardware has never existed or no changes)
+        if (! $audit->changes || ! is_array($audit->changes)) {
+            return response()->json(['message' => 'No change data in audit to restore from.'], 422);
+        }
+
+        $user = $request->user();
+        $this->assertAccessibleFromAudit($request, $audit);
+
+        // Build restore data from the 'new' values of the 'created' audit
+        $restoreData = [];
+        foreach ($audit->changes as $change) {
+            if (! isset($change['field'], $change['new'])) {
+                continue;
+            }
+            $restoreData[$change['field']] = $this->parseValueForRestore(
+                $change['new'],
+                $change['field']
+            );
+        }
+
+        if (empty($restoreData)) {
+            return response()->json(['message' => 'No field data found to restore.'], 422);
+        }
+
+        $restoreData['id'] = $audit->hardware_id;
+
+        $hardware = Hardware::create($restoreData);
+
+        // Advance the Postgres sequence past the restored id so the next
+        // auto-increment does not collide (duplicate key on hardwares_pkey).
+        // pg_get_serial_sequence resolves the sequence name regardless of
+        // SERIAL vs IDENTITY column definition.
+        if (DB::connection()->getDriverName() === 'pgsql') {
+            $seq = DB::selectOne("SELECT pg_get_serial_sequence('hardwares','id') as seq");
+            if ($seq && $seq->seq) {
+                DB::statement('SELECT setval(?, (SELECT COALESCE(MAX(id), 0) FROM hardwares))', [$seq->seq]);
+            }
+        }
+
+        // Note: Hardware::create() already fires HardwareAuditObserver::created()
+        // (registered in AppServiceProvider), which writes the 'created' audit —
+        // so we must NOT call it again here (would duplicate the audit row).
+
+        // Log an explicit 'rollback' audit for traceability
+        $rollbackChanges = array_map(
+            fn ($change) => ['field' => $change['field'], 'old' => 'حذف شده', 'new' => $change['new']],
+            $audit->changes
+        );
+        app(HardwareAuditObserver::class)->recordRollbackAudit(
+            $hardware,
+            $rollbackChanges,
+            $user?->id
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'سخت‌افزار با موفقیت بازگردانده شد.',
+            'data' => ['hardware_id' => $hardware->id],
+        ]);
+    }
+
+    /**
      * Export audit trail as CSV/Excel for compliance.
      */
-    public function export(Request $request, Hardware $hardware)
+    public function export(UnitScopedRequest $request, Hardware $hardware)
     {
         $this->assertAccessible($request, $hardware);
 
@@ -249,7 +344,7 @@ class HardwareAuditController extends Controller
     {
         $summary = [];
         foreach ($changes as $change) {
-            $summary[] = "فیلد <strong>{$change['field']}</strong>: از <span class='text-error'>{$change['old']}</span> به <span class='text-success'>{$change['new']}</span> تغییر یافت.";
+            $summary[] = 'فیلد <strong>'.e($change['field'])."</strong>: از <span class='text-error'>".e($change['old'])."</span> به <span class='text-success'>".e($change['new']).'</span> تغییر یافت.';
         }
 
         return $summary;
@@ -290,16 +385,56 @@ class HardwareAuditController extends Controller
     /**
      * Check if the hardware is within user's organizational scope.
      */
-    private function assertAccessible(Request $request, Hardware $hardware): void
+    private function assertAccessible(UnitScopedRequest $request, Hardware $hardware): void
     {
         $user = $request->user();
-        $accessibleIds = app(AccessService::class)->accessibleUnitIds($user);
+        $accessibleIds = $request->accessibleIds();
 
         $unitId = $hardware->relationLoaded('person')
             ? $hardware->person?->u_id
             : $hardware->person()->value('u_id');
 
         if (! $unitId || ! in_array($unitId, $accessibleIds)) {
+            abort(403, 'Hardware record not accessible.');
+        }
+    }
+
+    /**
+     * Check organizational access from an audit record (hardware may be gone).
+     *
+     * For a live hardware row we read its n_code directly; for a hard-deleted
+     * row (the common case for restoreRecord) we fall back to the n_code stored
+     * in the audit snapshot so the org-scope check is never skipped.
+     */
+    private function assertAccessibleFromAudit(UnitScopedRequest $request, HardwareAudit $audit): void
+    {
+        $user = $request->user();
+        $accessibleIds = $request->accessibleIds();
+
+        $nCode = null;
+
+        $hw = DB::table('hardwares')->where('id', $audit->hardware_id)->first();
+        if ($hw && isset($hw->n_code)) {
+            $nCode = $hw->n_code;
+        } elseif (is_array($audit->changes)) {
+            foreach ($audit->changes as $change) {
+                if (($change['field'] ?? null) === 'n_code' && isset($change['new'])) {
+                    // The observer stores formatted display value; guard against
+                    // the em-dash placeholder which is not a valid national code.
+                    $nCode = is_string($change['new']) && $change['new'] !== '—' ? $change['new'] : null;
+                    break;
+                }
+            }
+        }
+
+        // Deny by default when scope cannot be proven — prevents IDOR when
+        // audit data is missing n_code (legacy/corrupted/manual inserts).
+        if ($nCode === null) {
+            abort(403, 'Hardware record not accessible.');
+        }
+
+        $unitId = DB::table('persons')->where('n_code', $nCode)->value('u_id');
+        if (! $unitId || ! in_array($unitId, $accessibleIds, true)) {
             abort(403, 'Hardware record not accessible.');
         }
     }

@@ -2,6 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Http\Controllers\Api\HrAnalyticsController;
+use App\Http\Controllers\Api\HrStatsController;
+use App\Http\Controllers\Api\OrgChartController;
 use App\Models\Person;
 use App\Models\Unit;
 use App\Models\User;
@@ -11,6 +14,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Livewire\Livewire;
 use Tests\TestCase;
+
+covers(OrgChartController::class, HrStatsController::class, HrAnalyticsController::class);
 
 class HrLivewireTest extends TestCase
 {

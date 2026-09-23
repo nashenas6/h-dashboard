@@ -3,13 +3,13 @@
 use Livewire\Component;
 
 return new class extends Component {
-    public string $map_ip;
+    public string $map_tile_template;
     public string $setview;
     public string $zoom;
 
     public function mount(): void
     {
-        $this->map_ip = config('map.tile_server_ip', '10.100.252.137');
+        $this->map_tile_template = config('map.tile_url_template', 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
         $this->setview = '[36.558188, 48.716125]';
         $this->zoom = '8';
     }
@@ -54,12 +54,22 @@ return new class extends Component {
 
         var map = L.map('map').setView({{ $setview }}, {{ $zoom }});
 
-        L.tileLayer('http://{{ $map_ip }}:8080/tile/{z}/{x}/{y}.png', {
+        L.tileLayer('{{ $map_tile_template }}', {
             attribution: '&copy; Health-Dashboard',
             className: 'map-tiles'
         }).addTo(map);
 
         window.map = map;
+
+        // Reset any global layers that depended on the previous map instance
+        // (SPA navigation reuses window.map but marker/line layers from the prior
+        // page would otherwise stay attached to a stale Leaflet instance).
+        ['markersLayer', 'linesLayer', 'geojsonLayers', 'countyLayers'].forEach(function (name) {
+            if (window[name]) {
+                try { window[name].remove?.(); } catch (e) {}
+                delete window[name];
+            }
+        });
 
         // Issue (map width): after init, force Leaflet to measure the real
         // container size. Leaflet captures dimensions at construction; if the

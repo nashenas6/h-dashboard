@@ -15,6 +15,7 @@ return new class extends Component {
     use Toast;
 
     public $name, $description, $unit_type_id, $region_id, $province_id, $parent_id;
+    public bool $can_receive_tickets = false;
     public int|null $editingId = null;
     public string $search = '';
     public int $perPage = 20;
@@ -73,7 +74,8 @@ return new class extends Component {
         $query = Unit::query()
             ->withAggregate('unitType', 'name')
             ->withAggregate('region', 'name')
-            ->withAggregate('parent', 'name');
+            ->withAggregate('parent', 'name')
+            ->addSelect('can_receive_tickets', 'is_active');
 
         if (! empty($accessibleIds)) {
             $query->whereIn('id', $accessibleIds);
@@ -196,6 +198,7 @@ return new class extends Component {
             'unit_type_id' => 'required|exists:unit_types,id',
             'region_id' => 'nullable|exists:regions,id',
             'parent_id' => $this->unit_type_id == 1 ? 'nullable' : 'required|exists:units,id',
+            'can_receive_tickets' => 'boolean',
         ];
         
         if ($this->userUnitLevel === 'ministry') {
@@ -220,6 +223,9 @@ return new class extends Component {
             'unit_type_id' => $this->unit_type_id,
             'region_id' => $this->determineRegionId(),
             'parent_id' => $this->parent_id,
+            'can_receive_tickets' => auth()->user()->can('manage_unit_tickets')
+                ? $this->can_receive_tickets
+                : false,
         ];
         
         try {
@@ -261,6 +267,7 @@ return new class extends Component {
         $this->unit_type_id = $unit->unit_type_id;
         $this->region_id = $unit->region_id;
         $this->parent_id = $unit->parent_id;
+        $this->can_receive_tickets = (bool) $unit->can_receive_tickets;
         
         if ($this->userUnitLevel === 'ministry' && $unit->region) {
             if ($unit->region->type === 'county') {
@@ -288,7 +295,7 @@ return new class extends Component {
 
     public function resetForm(): void
     {
-        $this->reset(['name', 'description', 'unit_type_id', 'region_id', 'province_id', 'parent_id', 'editingId']);
+        $this->reset(['name', 'description', 'unit_type_id', 'region_id', 'province_id', 'parent_id', 'editingId', 'can_receive_tickets']);
         $this->loadDropdowns();
     }
 
@@ -307,7 +314,30 @@ return new class extends Component {
             ['key' => 'unit_type_name', 'label' => 'نوع واحد', 'class' => 'w-50 hidden sm:table-cell'],
             ['key' => 'region_name', 'label' => 'منطقه', 'class' => 'w-8 hidden sm:table-cell'],
             ['key' => 'parent_name', 'label' => 'واحد بالادستی', 'class' => 'w-20 hidden xl:table-cell'],
+            ['key' => 'can_receive_tickets', 'label' => 'پذیرش تیکت', 'class' => 'w-5 hidden lg:table-cell'],
         ];
+    }
+
+    public function toggleTicketCapability($unitId): void
+    {
+        if (! auth()->user()->can('manage_unit_tickets')) {
+            $this->error('شما مجوز مدیریت تیکت‌ها را ندارید.', position: 'toast-bottom');
+            return;
+        }
+
+        $unit = Unit::find($unitId);
+        if (! $unit) {
+            $this->error('واحد یافت نشد.', position: 'toast-bottom');
+            return;
+        }
+
+        $unit->can_receive_tickets = ! $unit->can_receive_tickets;
+        $unit->saveQuietly();
+
+        $status = $unit->can_receive_tickets ? 'فعال شد' : 'غیرفعال شد';
+        $this->success("واحد «{$unit->name}» برای پذیرش تیکت {$status}.", position: 'toast-bottom');
+
+        app(\App\Services\AccessService::class)->clearAllCaches();
     }
 
     public function with(): array
@@ -354,28 +384,36 @@ return new class extends Component {
         
         <x-table :headers="$headers" :rows="$units" :sort-by="$sortBy" with-pagination per-page="perPage"
                  :per-page-values="[10, 20, 50]">
-            @foreach($units as $unit)
-                <tr wire:key="{{ $unit->id }}">
-                    @scope('actions', $unit)
-                    <div class="flex w-1/12">
-                        <a href="/units/{{ $unit->id }}/map"
-                           class="btn btn-ghost btn-sm text-primary">
-                            <x-icon name="o-map" class="w-5 h-5"/>
-                            <span class="hidden 2xl:inline">نقشه</span>
-                        </a>
-                        <x-button icon="o-pencil"
-                                  wire:click="editUnit({{ $unit->id }})"
-                                  class="btn-ghost btn-sm text-primary"
-                                  @click="$wire.modal = true" />
-                        <x-button icon="o-trash"
-                                  wire:click="deleteUnit({{ $unit->id }})"
-                                  wire:confirm="آیا مطمئن هستید"
-                                  spinner
-                                  class="btn-ghost btn-sm text-error" />
-                    </div>
-                    @endscope
-                </tr>
-            @endforeach
+            @scope('actions', $unit)
+                <div class="flex w-1/12">
+                    <a href="/units/{{ $unit->id }}/map"
+                       class="btn btn-ghost btn-sm text-primary">
+                        <x-icon name="o-map" class="w-5 h-5"/>
+                        <span class="hidden 2xl:inline">نقشه</span>
+                    </a>
+                    <x-button icon="o-pencil"
+                              wire:click="editUnit({{ $unit->id }})"
+                              class="btn-ghost btn-sm text-primary"
+                              @click="$wire.modal = true" />
+                    <x-button icon="o-trash"
+                              wire:click="deleteUnit({{ $unit->id }})"
+                              wire:confirm="آیا مطمئن هستید"
+                              spinner
+                              class="btn-ghost btn-sm text-error" />
+                </div>
+            @endscope
+
+            @scope('cell_can_receive_tickets', $unit)
+                <button wire:click="toggleTicketCapability({{ $unit->id }})" class="btn btn-ghost btn-sm" title="تغییر وضعیت پذیرش تیکت">
+                    @if($unit->can_receive_tickets)
+                        <x-icon name="o-check-circle" class="w-6 h-6 text-success" />
+                        <span class="text-xs text-success hidden lg:inline">فعال</span>
+                    @else
+                        <x-icon name="o-x-circle" class="w-6 h-6 text-base-content/40" />
+                        <span class="text-xs text-base-content/40 hidden lg:inline">غیرفعال</span>
+                    @endif
+                </button>
+            @endscope
         </x-table>
     </x-card>
 
@@ -400,6 +438,11 @@ return new class extends Component {
 
             <x-select wire:model.live="parent_id" label="واحد بالادستی" :options="$parentUnits" option-value="id"
                       option-label="name" :required="$unit_type_id != 1" placeholder="انتخاب کنید"/>
+
+            <div class="col-span-2">
+                <x-toggle wire:model="can_receive_tickets" label="پذیرش تیکت"
+                          hint="اگر فعال باشد، این واحد می‌تواند تیکت دریافت کند." />
+            </div>
 
             <div class="col-span-2 flex justify-end space-x-2">
                 <x-button type="submit" label="{{ $editingId ? 'به‌روزرسانی' : 'ذخیره' }}" icon="o-check"

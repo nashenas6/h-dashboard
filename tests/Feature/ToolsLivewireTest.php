@@ -6,7 +6,6 @@ use App\Models\ActivityLog;
 use App\Models\Notification;
 use App\Models\Person;
 use App\Models\Ticket;
-use App\Models\Todo;
 use App\Models\Unit;
 use App\Models\User;
 use Database\Seeders\PermissionSeeder;
@@ -15,6 +14,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Livewire;
 use Tests\TestCase;
+
+covers(Ticket::class);
 
 class ToolsLivewireTest extends TestCase
 {
@@ -41,6 +42,7 @@ class ToolsLivewireTest extends TestCase
         ]);
         $user = User::create(['n_code' => $nCode, 'password' => Hash::make('password')]);
         $user->units()->attach($unit->id, ['role' => 'staff', 'is_primary' => true]);
+        $user->givePermissionTo('manage_users');
 
         return $user;
     }

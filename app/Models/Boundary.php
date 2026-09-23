@@ -9,27 +9,11 @@ class Boundary extends Model
 {
     protected $table = 'boundaries';
 
-    protected $guarded = [];
+    protected $fillable = ['boundary'];
 
     protected $casts = [
         'multipolygon' => 'multipolygon',
     ];
-
-    /**
-     * ارتباط با جدول Province
-     */
-    public function province(): HasOne
-    {
-        return $this->hasOne(Province::class);
-    }
-
-    /**
-     * ارتباط با جدول County
-     */
-    public function county(): HasOne
-    {
-        return $this->hasOne(County::class);
-    }
 
     /**
      * ارتباط با جدول unit

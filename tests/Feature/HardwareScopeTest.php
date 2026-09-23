@@ -1,14 +1,18 @@
 <?php
 
+use App\Models\Hardware;
 use App\Models\Person;
 use App\Models\Unit;
 use App\Models\User;
+use App\Traits\HasOrganizationalScope;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Livewire\Livewire;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+
+covers(HasOrganizationalScope::class);
 
 uses(TestCase::class, RefreshDatabase::class);
 
@@ -139,4 +143,23 @@ it('createHardware rejects out-of-scope person', function () {
         ->set('pc_name', 'PC-OUT-OF-SCOPE')
         ->call('createHardware')
         ->assertHasErrors('n_code'); // exists:persons rule fails for out-of-scope n_code
+});
+
+it('general search matches the full person name (f_name + l_name)', function () {
+    [$unit, $person] = makeUnitAndPerson('Unit A', '1234567890', 'Mehdi', 'Asgari');
+    $user = makeUserInUnit($unit);
+
+    // Hardware must exist so the row is returned
+    Hardware::create([
+        'n_code' => '1234567890',
+        'pc_name' => 'PC-MEHDI-01',
+        'type' => 'pc',
+    ]);
+
+    $component = Livewire::actingAs($user)
+        ->test('hardware.index')
+        ->set('search', 'Mehdi Asgari');
+
+    // The combined name must surface the matching hardware row
+    expect($component->html())->toContain('PC-MEHDI-01');
 });

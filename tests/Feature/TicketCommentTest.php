@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Person;
 use App\Models\Ticket;
+use App\Models\TicketComment;
 use App\Models\Unit;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -22,6 +23,8 @@ use Tests\TestCase;
  * Covers: create, threaded reply, list, author-only edit (15 min window),
  * authorization (403 for non-author), reactions add/remove, soft delete.
  */
+covers(TicketComment::class);
+
 class TicketCommentTest extends TestCase
 {
     use RefreshDatabase;

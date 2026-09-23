@@ -6,6 +6,8 @@ use App\Services\ZabbixService;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
+covers(ZabbixService::class);
+
 class ZabbixServiceTest extends TestCase
 {
     protected function setUp(): void

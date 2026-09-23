@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\HardwareUpdated;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UnitScopedRequest;
 use App\Models\Hardware;
 use App\Models\HardwareAudit;
 use App\Models\Person;
-use App\Services\AccessService;
 use App\Traits\PersianNormalizer;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -18,12 +18,50 @@ class HardwareController extends Controller
     use PersianNormalizer;
 
     /**
+     * Shared hardware validation rules.
+     *
+     * @param  bool  $required  true = store (n_code/pc_name required), false = update (sometimes|required)
+     * @param  bool  $includeShutdown  true = include shutdown boolean (update only)
+     */
+    private function hardwareValidationRules(bool $required = true, bool $includeShutdown = false): array
+    {
+        $nCodeRule = $required ? 'required|string|exists:persons,n_code' : 'sometimes|required|string|exists:persons,n_code';
+        $pcNameRule = $required ? 'required|string|max:255' : 'sometimes|required|string|max:255';
+
+        $rules = [
+            'n_code' => $nCodeRule,
+            'pc_name' => $pcNameRule,
+            'type' => 'nullable|string|max:50',
+            'os' => 'nullable|string|max:100',
+            'ip_valid' => 'nullable|string|max:45',
+            'ip_local' => 'nullable|string|max:45',
+            'mac' => 'nullable|string|max:17',
+            'net_type' => 'nullable|string|max:50',
+            'switch' => 'nullable|string|max:100',
+            'port' => 'nullable|string|max:50',
+            'vlan' => 'nullable|string|max:50',
+            'motherboard' => 'nullable|string|max:100',
+            'cpu' => 'nullable|string|max:100',
+            'ram' => 'nullable|string|max:50',
+            'hdd' => 'nullable|string|max:100',
+            'comments' => 'nullable|string',
+            'mark' => 'boolean',
+            'clean_at' => 'nullable|date',
+        ];
+
+        if ($includeShutdown) {
+            $rules['shutdown'] = 'boolean';
+        }
+
+        return $rules;
+    }
+
+    /**
      * Check if the given hardware record is within the user's accessible organizational scope.
      */
-    private function assertAccessible(Request $request, Hardware $hardware): void
+    private function assertAccessible(UnitScopedRequest $request, Hardware $hardware): void
     {
-        $user = $request->user();
-        $accessibleIds = app(AccessService::class)->accessibleUnitIds($user);
+        $accessibleIds = $request->accessibleIds();
 
         $unitId = $hardware->relationLoaded('person')
             ? $hardware->person?->u_id
@@ -70,85 +108,28 @@ class HardwareController extends Controller
         ];
     }
 
-    public function index(Request $request): array
+    public function index(UnitScopedRequest $request): array
     {
-        $user = $request->user();
-        $accessibleIds = app(AccessService::class)->accessibleUnitIds($user);
+        $accessibleIds = $request->accessibleIds();
 
         $query = Hardware::join('persons', 'hardwares.n_code', '=', 'persons.n_code')
             ->whereIn('persons.u_id', $accessibleIds)
             ->select('hardwares.*')
             ->distinct();
 
-        // Filters
-        if ($request->filled('search')) {
-            $s = self::normalizeForSearch($request->search);
-            $query->where(function ($q) use ($s) {
-                $q->where('pc_name', 'LIKE', "%{$s}%")
-                    ->orWhere('hardwares.n_code', 'LIKE', "%{$s}%")
-                    ->orWhere('ip_valid', 'LIKE', "%{$s}%")
-                    ->orWhere('ip_local', 'LIKE', "%{$s}%")
-                    ->orWhere('mac', 'LIKE', "%{$s}%")
-                    ->orWhere('comments', 'LIKE', "%{$s}%")
-                    ->orWhere('persons.f_name', 'LIKE', "%{$s}%")
-                    ->orWhere('persons.l_name', 'LIKE', "%{$s}%");
-            });
-        }
-
-        if ($request->filled('type')) {
-            $type = $request->type;
-            // Map common aliases to actual database values
-            $typeAliases = ['desktop' => 'pc', 'پی‌سی' => 'pc'];
-            $type = $typeAliases[$type] ?? $type;
-            $query->where('type', 'LIKE', "%{$type}%");
-        }
-        if ($request->filled('os')) {
-            $query->where('os', 'LIKE', "%{$request->os}%");
-        }
-        if ($request->filled('cpu')) {
-            $query->where('cpu', 'LIKE', "%{$request->cpu}%");
-        }
-        if ($request->filled('ram')) {
-            $query->where('ram', 'LIKE', "%{$request->ram}%");
-        }
-        if ($request->filled('hdd')) {
-            $query->where('hdd', 'LIKE', "%{$request->hdd}%");
-        }
-        if ($request->filled('shutdown')) {
-            $query->where('shutdown', $request->shutdown === 'true' || $request->shutdown === '1');
-        }
-        if ($request->filled('net_type')) {
-            $query->where('net_type', 'LIKE', "%{$request->net_type}%");
-        }
-        if ($request->filled('mark')) {
-            $query->where('mark', $request->mark === 'true' || $request->mark === '1');
-        }
-        if ($request->filled('person')) {
-            $normalized = self::normalizeForSearch($request->person);
-            $query->where(function ($q) use ($normalized) {
-                $q->where('persons.f_name', 'LIKE', "%{$normalized}%")
-                    ->orWhere('persons.l_name', 'LIKE', "%{$normalized}%")
-                    ->orWhere('persons.n_code', 'LIKE', "%{$normalized}%");
-            });
-        }
-        if ($request->filled('unit')) {
-            $normalized = self::normalizeForSearch($request->unit);
-            $query->whereExists(function ($q) use ($normalized) {
-                $q->selectRaw('1')
-                    ->from('units')
-                    ->whereColumn('units.id', 'persons.u_id')
-                    ->where('units.name', 'LIKE', "%{$normalized}%");
-            });
-        }
-        if ($request->filled('semat')) {
-            $normalized = self::normalizeForSearch($request->semat);
-            $query->whereExists(function ($q) use ($normalized) {
-                $q->selectRaw('1')
-                    ->from('semats')
-                    ->whereColumn('semats.id', 'persons.s_id')
-                    ->where('semats.name', 'LIKE', "%{$normalized}%");
-            });
-        }
+        // Apply query scopes for filters
+        $query->filterSearch($request->input('search'))
+            ->filterType($request->input('type'))
+            ->filterOs($request->input('os'))
+            ->filterCpu($request->input('cpu'))
+            ->filterRam($request->input('ram'))
+            ->filterHdd($request->input('hdd'))
+            ->filterShutdown($request->input('shutdown'))
+            ->filterNetType($request->input('net_type'))
+            ->filterMark($request->input('mark'))
+            ->filterPerson($request->input('person'))
+            ->filterUnit($request->input('unit'))
+            ->filterSemat($request->input('semat'));
 
         $allowedSortColumns = ['id', 'n_code', 'pc_name', 'type', 'os', 'created_at', 'shutdown', 'mark', 'ip_valid', 'ip_local', 'mac', 'cpu', 'ram', 'hdd'];
         $sortBy = $request->get('sort_by', 'id');
@@ -189,39 +170,19 @@ class HardwareController extends Controller
         ];
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(UnitScopedRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'n_code' => 'required|string|exists:persons,n_code',
-            'pc_name' => 'required|string|max:255',
-            'type' => 'nullable|string|max:50',
-            'os' => 'nullable|string|max:100',
-            'ip_valid' => 'nullable|string|max:45',
-            'ip_local' => 'nullable|string|max:45',
-            'mac' => 'nullable|string|max:17',
-            'net_type' => 'nullable|string|max:50',
-            'switch' => 'nullable|string|max:100',
-            'port' => 'nullable|string|max:50',
-            'vlan' => 'nullable|string|max:50',
-            'motherboard' => 'nullable|string|max:100',
-            'cpu' => 'nullable|string|max:100',
-            'ram' => 'nullable|string|max:50',
-            'hdd' => 'nullable|string|max:100',
-            'comments' => 'nullable|string',
-            'mark' => 'boolean',
-            'clean_at' => 'nullable|date',
-        ]);
+        $validated = $request->validate($this->hardwareValidationRules(required: true));
 
         // Verify the person's unit is within the user's accessible scope
         $person = Person::where('n_code', $validated['n_code'])->firstOrFail();
-        $accessibleIds = app(AccessService::class)->accessibleUnitIds($request->user());
-        if (! in_array($person->u_id, $accessibleIds)) {
+        if (! in_array($person->u_id, $request->accessibleIds())) {
             return response()->json(['message' => 'Person not accessible.'], 403);
         }
 
         $hardware = Hardware::create($validated);
         $hardware->load('person.unit');
-        GisController::invalidateCache();
+        event(new HardwareUpdated($hardware, 'created'));
 
         return response()->json([
             'success' => true,
@@ -229,7 +190,7 @@ class HardwareController extends Controller
         ], 201);
     }
 
-    public function show(Request $request, Hardware $hardware): JsonResponse
+    public function show(UnitScopedRequest $request, Hardware $hardware): JsonResponse
     {
         $this->assertAccessible($request, $hardware);
 
@@ -241,44 +202,23 @@ class HardwareController extends Controller
         ]);
     }
 
-    public function update(Request $request, Hardware $hardware): JsonResponse
+    public function update(UnitScopedRequest $request, Hardware $hardware): JsonResponse
     {
         $this->assertAccessible($request, $hardware);
 
-        $validated = $request->validate([
-            'n_code' => 'sometimes|required|string|exists:persons,n_code',
-            'pc_name' => 'sometimes|required|string|max:255',
-            'type' => 'nullable|string|max:50',
-            'os' => 'nullable|string|max:100',
-            'ip_valid' => 'nullable|string|max:45',
-            'ip_local' => 'nullable|string|max:45',
-            'mac' => 'nullable|string|max:17',
-            'net_type' => 'nullable|string|max:50',
-            'switch' => 'nullable|string|max:100',
-            'port' => 'nullable|string|max:50',
-            'vlan' => 'nullable|string|max:50',
-            'motherboard' => 'nullable|string|max:100',
-            'cpu' => 'nullable|string|max:100',
-            'ram' => 'nullable|string|max:50',
-            'hdd' => 'nullable|string|max:100',
-            'comments' => 'nullable|string',
-            'mark' => 'boolean',
-            'clean_at' => 'nullable|date',
-            'shutdown' => 'boolean',
-        ]);
+        $validated = $request->validate($this->hardwareValidationRules(required: false, includeShutdown: true));
 
         // Verify the new person's unit is within the user's accessible scope (if n_code is being changed)
         if (isset($validated['n_code'])) {
             $newPerson = Person::where('n_code', $validated['n_code'])->firstOrFail();
-            $accessibleIds = app(AccessService::class)->accessibleUnitIds($request->user());
-            if (! in_array($newPerson->u_id, $accessibleIds)) {
+            if (! in_array($newPerson->u_id, $request->accessibleIds())) {
                 return response()->json(['message' => 'Cannot assign hardware to a person in an inaccessible unit.'], 403);
             }
         }
 
         $hardware->update($validated);
         $hardware->load('person.unit');
-        GisController::invalidateCache();
+        event(new HardwareUpdated($hardware, 'updated'));
 
         return response()->json([
             'success' => true,
@@ -286,20 +226,19 @@ class HardwareController extends Controller
         ]);
     }
 
-    public function destroy(Request $request, Hardware $hardware): JsonResponse
+    public function destroy(UnitScopedRequest $request, Hardware $hardware): JsonResponse
     {
         $this->assertAccessible($request, $hardware);
 
         $hardware->delete();
-        GisController::invalidateCache();
+        event(new HardwareUpdated($hardware, 'deleted'));
 
         return response()->json(['success' => true, 'message' => 'حذف شد']);
     }
 
-    public function stats(Request $request): JsonResponse
+    public function stats(UnitScopedRequest $request): JsonResponse
     {
-        $user = $request->user();
-        $accessibleIds = app(AccessService::class)->accessibleUnitIds($user);
+        $accessibleIds = $request->accessibleIds();
 
         // Issue #217: cache stats to avoid 3 heavy queries per request.
         // Key is scoped by (version, accessible units): the version counter is
@@ -330,69 +269,67 @@ class HardwareController extends Controller
         ]);
     }
 
-    public function bulkMark(Request $request): JsonResponse
+    public function bulkMark(UnitScopedRequest $request): JsonResponse
     {
-        $request->validate([
+        $validated = $request->validate([
             'ids' => 'required|array',
             'ids.*' => 'integer|exists:hardwares,id',
             'mark' => 'required|boolean',
         ]);
 
-        $user = $request->user();
-        $accessibleIds = app(AccessService::class)->accessibleUnitIds($user);
+        $accessibleIds = $request->accessibleIds();
 
         // Single query: load accessible hardwares
         $hardwares = Hardware::join('persons', 'hardwares.n_code', '=', 'persons.n_code')
-            ->whereIn('hardwares.id', $request->ids)
+            ->whereIn('hardwares.id', $validated['ids'])
             ->whereIn('persons.u_id', $accessibleIds)
             ->select('hardwares.*')
             ->get();
 
-        if ($hardwares->count() !== count($request->ids)) {
+        if ($hardwares->count() !== count($validated['ids'])) {
             return response()->json(['message' => 'Some hardware records are not accessible.'], 403);
         }
 
         $accessibleHardwareIds = $hardwares->pluck('id')->toArray();
 
         // Suppress individual audit entries during bulk operations
-        Hardware::$suppressAudit = true;
-
-        // Single update query on the verified IDs
-        $count = Hardware::whereIn('id', $accessibleHardwareIds)
-            ->update(['mark' => $request->mark]);
-
-        // Restore audit logging
-        Hardware::$suppressAudit = false;
+        request()->attributes->set('suppress_audit', true);
+        try {
+            // Single update query on the verified IDs
+            $count = Hardware::whereIn('id', $accessibleHardwareIds)
+                ->update(['mark' => $validated['mark']]);
+        } finally {
+            request()->attributes->remove('suppress_audit');
+        }
 
         // Batch insert audit entries
         $this->batchInsertAudits($hardwares, 'bulk_mark', [
-            ['field' => 'mark', 'old' => ! $request->mark, 'new' => $request->mark],
+            ['field' => 'mark', 'old' => ! $validated['mark'], 'new' => $validated['mark']],
         ]);
 
-        app(GisController::class)::invalidateCache();
+        event(new HardwareUpdated($hardwares->first(), 'bulk_mark'));
         Hardware::flushStatsCache(); // Issue #376: bulk update bypasses Eloquent events
 
         return response()->json(['success' => true, 'message' => "$count device(s) updated", 'count' => $count]);
     }
 
-    public function bulkDelete(Request $request): JsonResponse
+    public function bulkDelete(UnitScopedRequest $request): JsonResponse
     {
-        $request->validate([
+        $validated = $request->validate([
             'ids' => 'required|array',
             'ids.*' => 'integer|exists:hardwares,id',
         ]);
 
-        $user = $request->user();
-        $accessibleIds = app(AccessService::class)->accessibleUnitIds($user);
+        $accessibleIds = $request->accessibleIds();
 
         // Single query: load accessible hardwares
         $hardwares = Hardware::join('persons', 'hardwares.n_code', '=', 'persons.n_code')
-            ->whereIn('hardwares.id', $request->ids)
+            ->whereIn('hardwares.id', $validated['ids'])
             ->whereIn('persons.u_id', $accessibleIds)
             ->select('hardwares.*')
             ->get();
 
-        if ($hardwares->count() !== count($request->ids)) {
+        if ($hardwares->count() !== count($validated['ids'])) {
             return response()->json(['message' => 'Some hardware records are not accessible.'], 403);
         }
 
@@ -402,14 +339,14 @@ class HardwareController extends Controller
         $accessibleHardwareIds = $hardwares->pluck('id')->toArray();
 
         // Suppress individual audit entries during bulk operations
-        Hardware::$suppressAudit = true;
+        request()->attributes->set('suppress_audit', true);
+        try {
+            $count = Hardware::whereIn('id', $accessibleHardwareIds)->delete();
+        } finally {
+            request()->attributes->remove('suppress_audit');
+        }
 
-        $count = Hardware::whereIn('id', $accessibleHardwareIds)->delete();
-
-        // Restore audit logging
-        Hardware::$suppressAudit = false;
-
-        app(GisController::class)::invalidateCache();
+        event(new HardwareUpdated($hardwares->first(), 'bulk_deleted'));
         Hardware::flushStatsCache(); // Issue #376: bulk delete bypasses Eloquent events
 
         return response()->json(['success' => true, 'message' => "$count device(s) deleted", 'count' => $count]);

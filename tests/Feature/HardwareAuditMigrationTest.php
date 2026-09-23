@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\HardwareAudit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -12,6 +13,8 @@ use Tests\TestCase;
  * legacy `hardware_histories` rows are copied into `hardware_audits`
  * and the legacy table is dropped.
  */
+covers(HardwareAudit::class);
+
 class HardwareAuditMigrationTest extends TestCase
 {
     use RefreshDatabase;
@@ -45,6 +48,15 @@ class HardwareAuditMigrationTest extends TestCase
             $fks = collect(DB::select('PRAGMA foreign_key_list("hardware_audits")'))
                 ->where('from', 'hardware_id');
             $this->assertCount(0, $fks, 'hardware_id should not have a FK (audit trail must survive deletion)');
+        } elseif ($driver === 'pgsql') {
+            // PostgreSQL: check pg_constraint for FK on hardware_id
+            $fks = DB::select("
+                SELECT conname FROM pg_constraint
+                WHERE conrelid = 'hardware_audits'::regclass
+                AND contype = 'f'
+                AND pg_get_constraintdef(oid) LIKE '%hardware_id%'
+            ");
+            $this->assertCount(0, $fks, 'hardware_id should not have a FK (audit trail must survive deletion)');
         } elseif ($driver === 'mysql') {
             // MySQL: check information_schema for FK on hardware_id
             $fks = DB::select("
@@ -55,10 +67,6 @@ class HardwareAuditMigrationTest extends TestCase
                 AND REFERENCED_TABLE_NAME IS NOT NULL
             ");
             $this->assertCount(0, $fks, 'hardware_id should not have a FK (audit trail must survive deletion)');
-        } else {
-            // For other drivers, use Laravel's schema introspection if available
-            // or skip with a warning
-            $this->markTestSkipped("FK check not implemented for driver: {$driver}");
         }
     }
 }

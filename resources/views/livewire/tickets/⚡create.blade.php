@@ -35,7 +35,7 @@ new class extends Component
         $units = [];
         $todos = [];
 
-        if (strlen($this->search) >= 2) {
+        if (mb_strlen($this->search) >= 2) {
             $userUnitId = auth()->user()->person?->u_id;
 
             $query = Unit::where('can_receive_tickets', true)->where('is_active', true);
@@ -113,7 +113,7 @@ new class extends Component
             'content' => 'required|string|min:10',
         ]);
 
-        $ticketCode = 'TK-' . strtoupper(substr(uniqid(), -6));
+        $ticketCode = 'TK-' . strtoupper(Str::random(8));
 
         $ticket = Ticket::create([
             'ticket_code' => $ticketCode,
@@ -180,8 +180,7 @@ new class extends Component
             description: "کد پیگیری شما: {$ticketCode}",
             position: 'toast-top toast-left',
             icon: 'o-check-circle',
-            css: 'alert-success font-bold',
-            timeout: 0,
+            timeout: 5000,
             redirectTo: null
         );
 
@@ -203,6 +202,7 @@ new class extends Component
         <x-help:modal wireModel="showHelpModal" />
 
     <x-card shadow>
+        <x-errors :only="['unit_id', 'subject', 'content', 'files']" title="خطا در ثبت تیکت" />
         <x-form wire:submit="saveTicket" class="grid grid-cols-2 gap-4">
             <div class="relative">
                 <x-input
@@ -215,7 +215,7 @@ new class extends Component
                 <div class="absolute z-50 w-full mt-1 bg-base-100 border border-base-300 rounded-lg shadow-xl max-h-52 overflow-auto">
                     @foreach($units as $unit)
                     <div
-                        wire:click="selectUnit({{ $unit['id'] }}, '{{ $unit['name'] }}')"
+                        wire:click="selectUnit({{ $unit['id'] }}, @js($unit['name']))"
                         class="p-3 text-sm hover:bg-primary hover:text-white cursor-pointer transition-colors border-b border-base-200 last:border-0">
                         {{ $unit['name'] }}
                     </div>

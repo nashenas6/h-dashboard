@@ -2,8 +2,22 @@ APP_NAME=h-dashboard
 APP_ENV=local
 APP_KEY=base64:aelQP/iruUmruqDr1iZ9XEFB/EgFm3crvwHN1lqnix8=
 APP_DEBUG=false
-APP_URL=http://coder1.boxd.sh
+APP_URL=http://127.0.0.1:8000
+# ── Map / routing / geocoding servers ──
+# تایل/نقشه (OpenStreetMap)
 TILE_SERVER_IP=tile.openstreetmap.org
+TILE_SERVER_PORT=
+TILE_SERVER_SCHEME=https
+# قالب کامل آدرس تایل (OSM)
+TILE_URL_TEMPLATE=https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png
+# مسیریابی (OSRM)
+ROUTING_SERVER_IP=127.0.0.1
+ROUTING_SERVER_PORT=5000
+ROUTING_SERVER_SCHEME=http
+# آدرس‌یابی (Nominatim)
+GEOCODING_SERVER_IP=127.0.0.1
+GEOCODING_SERVER_PORT=8088
+GEOCODING_SERVER_SCHEME=http
 
 APP_LOCALE=fa
 APP_FALLBACK_LOCALE=en
@@ -31,8 +45,13 @@ DB_ROOT_PASSWORD=example_4be97a3608e27da3
 DB_DEFAULT_EMAIL=admin@...
 DB_DEFAULT_PASSWORD=example_eb4bddfe0a613c1e
 
+# Application timezone (display layer). PostgreSQL keeps UTC for storage;
+# convert to Tehran/Jalali in code via morilog/jalali & hekmatinasser/verta.
+APP_TIMEZONE=Asia/Tehran
+
 SESSION_LIFETIME=120
 SESSION_ENCRYPT=false
+SESSION_SECURE_COOKIE=false
 SESSION_PATH=/
 SESSION_DOMAIN=null
 

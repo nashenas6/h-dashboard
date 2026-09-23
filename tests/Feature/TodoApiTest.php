@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Http\Controllers\Api\TodoController;
 use App\Models\Person;
 use App\Models\Todo;
 use App\Models\Unit;
@@ -11,6 +12,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Tests\TestCase;
+
+covers(TodoController::class);
 
 class TodoApiTest extends TestCase
 {

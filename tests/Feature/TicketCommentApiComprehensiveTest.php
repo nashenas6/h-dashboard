@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Http\Controllers\Api\TicketCommentController;
 use App\Models\Person;
 use App\Models\Ticket;
 use App\Models\TicketComment;
@@ -23,6 +24,8 @@ use Tests\TestCase;
  * scope enforcement, validation, thread depth, markdown, notifications,
  * reactions listing/idempotency, admin delete, 15-min edit window.
  */
+covers(TicketCommentController::class);
+
 class TicketCommentApiComprehensiveTest extends TestCase
 {
     use RefreshDatabase;
@@ -278,7 +281,7 @@ class TicketCommentApiComprehensiveTest extends TestCase
         $this->authAsUserA();
         // Ensure the admin role exists (needed for canBeDeletedBy hasRole('admin'))
         if (! Role::where('name', 'admin')->exists()) {
-            Role::create(['name' => 'admin']);
+            Role::firstOrCreate(['name' => 'admin']);
         }
         $this->user->assignRole('admin');
         $comment = $this->makeComment();

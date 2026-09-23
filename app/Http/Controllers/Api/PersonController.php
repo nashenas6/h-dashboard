@@ -3,29 +3,29 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UnitScopedRequest;
 use App\Models\Person;
-use App\Services\AccessService;
 use App\Traits\PersianNormalizer;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class PersonController extends Controller
 {
     use PersianNormalizer;
 
-    public function index(Request $request): JsonResponse
+    public function index(UnitScopedRequest $request): JsonResponse
     {
-        $accessibleIds = app(AccessService::class)->accessibleUnitIds($request->user());
+        $accessibleIds = $request->accessibleIds();
 
         $query = Person::whereIn('u_id', $accessibleIds)
             ->with(['unit:id,name', 'semat:id,name', 'tahsil:id,name', 'estekhdam:id,name', 'radif:id,name']);
 
         if ($request->filled('search')) {
-            $s = self::normalizeForSearch($request->search);
+            $s = self::normalizeForQuery($request->search);
             $query->where(function ($q) use ($s) {
                 $q->where('n_code', 'LIKE', "%{$s}%")
-                  ->orWhere('f_name', 'LIKE', "%{$s}%")
-                  ->orWhere('l_name', 'LIKE', "%{$s}%");
+                    ->orWhere('f_name', 'LIKE', "%{$s}%")
+                    ->orWhere('l_name', 'LIKE', "%{$s}%")
+                    ->orWhereRaw("CONCAT(f_name, ' ', l_name) LIKE ?", ["%{$s}%"]);
             });
         }
 
@@ -64,9 +64,9 @@ class PersonController extends Controller
         ]);
     }
 
-    public function show(Request $request, Person $person): JsonResponse
+    public function show(UnitScopedRequest $request, Person $person): JsonResponse
     {
-        $accessibleIds = app(AccessService::class)->accessibleUnitIds($request->user());
+        $accessibleIds = $request->accessibleIds();
 
         if (! in_array($person->u_id, $accessibleIds)) {
             return response()->json(['message' => 'Person not accessible.'], 403);
@@ -77,7 +77,7 @@ class PersonController extends Controller
         ]);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(UnitScopedRequest $request): JsonResponse
     {
         $validated = $request->validate([
             'n_code' => 'required|string|size:10|unique:persons,n_code',
@@ -90,7 +90,7 @@ class PersonController extends Controller
             'u_id' => 'required|exists:units,id',
         ]);
 
-        $accessibleIds = app(AccessService::class)->accessibleUnitIds($request->user());
+        $accessibleIds = $request->accessibleIds();
 
         if (! in_array($validated['u_id'], $accessibleIds)) {
             return response()->json(['message' => 'Unit not accessible.'], 403);
@@ -104,21 +104,18 @@ class PersonController extends Controller
         ], 201);
     }
 
-    public function update(Request $request, Person $person): JsonResponse
+    public function update(UnitScopedRequest $request, Person $person): JsonResponse
     {
-        $accessibleIds = app(AccessService::class)->accessibleUnitIds($request->user());
+        $accessibleIds = $request->accessibleIds();
 
         if (! in_array($person->u_id, $accessibleIds)) {
             return response()->json(['message' => 'Person not accessible.'], 403);
         }
 
-        // Check organizational scope for new u_id if present in request
-        if ($request->has('u_id') && ! in_array($request->input('u_id'), $accessibleIds)) {
-            return response()->json(['message' => 'New unit not accessible.'], 403);
-        }
-
+        // Issue #532: validate FIRST, then check scope — prevents information
+        // disclosure through differential error responses (403 vs 422).
         $validated = $request->validate([
-            'n_code' => 'sometimes|required|string|size:10|unique:persons,n_code,' . $person->n_code . ',n_code',
+            'n_code' => 'sometimes|required|string|size:10|unique:persons,n_code,'.$person->n_code.',n_code',
             'f_name' => 'sometimes|required|string|max:255',
             'l_name' => 'sometimes|required|string|max:255',
             't_id' => 'sometimes|required|exists:tahsils,id',
@@ -128,6 +125,10 @@ class PersonController extends Controller
             'u_id' => 'sometimes|required|exists:units,id',
         ]);
 
+        if (isset($validated['u_id']) && ! in_array($validated['u_id'], $accessibleIds)) {
+            return response()->json(['message' => 'Unit not accessible.'], 403);
+        }
+
         $person->update($validated);
 
         return response()->json([
@@ -136,9 +137,9 @@ class PersonController extends Controller
         ]);
     }
 
-    public function destroy(Request $request, Person $person): JsonResponse
+    public function destroy(UnitScopedRequest $request, Person $person): JsonResponse
     {
-        $accessibleIds = app(AccessService::class)->accessibleUnitIds($request->user());
+        $accessibleIds = $request->accessibleIds();
 
         if (! in_array($person->u_id, $accessibleIds)) {
             return response()->json(['message' => 'Person not accessible.'], 403);

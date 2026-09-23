@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Boundary;
+use App\Models\Person;
 use App\Models\Province;
 use App\Models\Region;
 use App\Models\Unit;
@@ -12,6 +13,8 @@ use Database\Seeders\PermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
+
+covers(Person::class);
 
 class LookupModelsTest extends TestCase
 {

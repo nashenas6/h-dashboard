@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Http\Controllers\Api\HardwareController;
 use App\Models\Person;
 use App\Models\Unit;
 use App\Models\User;
@@ -10,6 +11,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
+
+covers(HardwareController::class);
 
 class ApiLoginTest extends TestCase
 {

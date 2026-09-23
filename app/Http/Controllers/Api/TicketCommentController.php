@@ -3,24 +3,23 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UnitScopedRequest;
 use App\Models\Ticket;
 use App\Models\TicketComment;
 use App\Models\TicketCommentReaction;
 use App\Models\User;
-use App\Services\AccessService;
+use App\Services\NotificationService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 
 class TicketCommentController extends Controller
 {
     /**
      * List comments for a ticket.
      */
-    public function index(Request $request, Ticket $ticket): JsonResponse
+    public function index(UnitScopedRequest $request, Ticket $ticket): JsonResponse
     {
-        $accessibleIds = app(AccessService::class)->accessibleUnitIds($request->user());
+        $accessibleIds = $request->accessibleIds();
 
         if (! in_array($ticket->unit_id, $accessibleIds)) {
             return response()->json(['message' => 'Ticket not accessible.'], 403);
@@ -55,9 +54,9 @@ class TicketCommentController extends Controller
     /**
      * Create a new comment on a ticket.
      */
-    public function store(Request $request, Ticket $ticket): JsonResponse
+    public function store(UnitScopedRequest $request, Ticket $ticket): JsonResponse
     {
-        $accessibleIds = app(AccessService::class)->accessibleUnitIds($request->user());
+        $accessibleIds = $request->accessibleIds();
 
         if (! in_array($ticket->unit_id, $accessibleIds)) {
             return response()->json(['message' => 'Ticket not accessible.'], 403);
@@ -116,9 +115,9 @@ class TicketCommentController extends Controller
     /**
      * Show a single comment.
      */
-    public function show(Request $request, Ticket $ticket, TicketComment $comment): JsonResponse
+    public function show(UnitScopedRequest $request, Ticket $ticket, TicketComment $comment): JsonResponse
     {
-        $accessibleIds = app(AccessService::class)->accessibleUnitIds($request->user());
+        $accessibleIds = $request->accessibleIds();
 
         if (! in_array($ticket->unit_id, $accessibleIds) || $comment->ticket_id !== $ticket->id) {
             return response()->json(['message' => 'Comment not accessible.'], 403);
@@ -132,9 +131,9 @@ class TicketCommentController extends Controller
     /**
      * Update a comment (author only, within 15 minutes).
      */
-    public function update(Request $request, Ticket $ticket, TicketComment $comment): JsonResponse
+    public function update(UnitScopedRequest $request, Ticket $ticket, TicketComment $comment): JsonResponse
     {
-        $accessibleIds = app(AccessService::class)->accessibleUnitIds($request->user());
+        $accessibleIds = $request->accessibleIds();
 
         if (! in_array($ticket->unit_id, $accessibleIds) || $comment->ticket_id !== $ticket->id) {
             return response()->json(['message' => 'Comment not accessible.'], 403);
@@ -162,9 +161,9 @@ class TicketCommentController extends Controller
     /**
      * Soft delete a comment (author or admin).
      */
-    public function destroy(Request $request, Ticket $ticket, TicketComment $comment): JsonResponse
+    public function destroy(UnitScopedRequest $request, Ticket $ticket, TicketComment $comment): JsonResponse
     {
-        $accessibleIds = app(AccessService::class)->accessibleUnitIds($request->user());
+        $accessibleIds = $request->accessibleIds();
 
         if (! in_array($ticket->unit_id, $accessibleIds) || $comment->ticket_id !== $ticket->id) {
             return response()->json(['message' => 'Comment not accessible.'], 403);
@@ -182,9 +181,9 @@ class TicketCommentController extends Controller
     /**
      * Add a reaction to a comment.
      */
-    public function react(Request $request, Ticket $ticket, TicketComment $comment): JsonResponse
+    public function react(UnitScopedRequest $request, Ticket $ticket, TicketComment $comment): JsonResponse
     {
-        $accessibleIds = app(AccessService::class)->accessibleUnitIds($request->user());
+        $accessibleIds = $request->accessibleIds();
 
         if (! in_array($ticket->unit_id, $accessibleIds) || $comment->ticket_id !== $ticket->id) {
             return response()->json(['message' => 'Comment not accessible.'], 403);
@@ -214,9 +213,9 @@ class TicketCommentController extends Controller
     /**
      * Remove a reaction from a comment.
      */
-    public function unreact(Request $request, Ticket $ticket, TicketComment $comment): JsonResponse
+    public function unreact(UnitScopedRequest $request, Ticket $ticket, TicketComment $comment): JsonResponse
     {
-        $accessibleIds = app(AccessService::class)->accessibleUnitIds($request->user());
+        $accessibleIds = $request->accessibleIds();
 
         if (! in_array($ticket->unit_id, $accessibleIds) || $comment->ticket_id !== $ticket->id) {
             return response()->json(['message' => 'Comment not accessible.'], 403);
@@ -238,9 +237,9 @@ class TicketCommentController extends Controller
     /**
      * List reactions on a comment with counts.
      */
-    public function reactions(Request $request, Ticket $ticket, TicketComment $comment): JsonResponse
+    public function reactions(UnitScopedRequest $request, Ticket $ticket, TicketComment $comment): JsonResponse
     {
-        $accessibleIds = app(AccessService::class)->accessibleUnitIds($request->user());
+        $accessibleIds = $request->accessibleIds();
 
         if (! in_array($ticket->unit_id, $accessibleIds) || $comment->ticket_id !== $ticket->id) {
             return response()->json(['message' => 'Comment not accessible.'], 403);
@@ -268,14 +267,14 @@ class TicketCommentController extends Controller
     private function getThreadDepth(TicketComment $comment): int
     {
         $depth = DB::selectOne(
-            "WITH RECURSIVE cte AS (
+            'WITH RECURSIVE cte AS (
                 SELECT id, parent_id, 0 AS depth FROM ticket_comments WHERE id = ?
                 UNION ALL
                 SELECT tc.id, tc.parent_id, cte.depth + 1
                 FROM ticket_comments tc
                 INNER JOIN cte ON tc.id = cte.parent_id
             )
-            SELECT MAX(depth) AS max_depth FROM cte",
+            SELECT MAX(depth) AS max_depth FROM cte',
             [$comment->id]
         );
 
@@ -298,7 +297,7 @@ class TicketCommentController extends Controller
         }
 
         // Only allow http, https, mailto, tel
-        if (!preg_match('/^(https?|mailto|tel):/i', $url)) {
+        if (! preg_match('/^(https?|mailto|tel):/i', $url)) {
             return '#';
         }
 
@@ -321,13 +320,14 @@ class TicketCommentController extends Controller
             // Issue #425: URL goes through sanitizeUrl() which strips any character that could
             // break out of the href="..." attribute (quotes, angle brackets, control chars).
             // Note: $body is e()-escaped before this, so this is an extra defense-in-depth layer.
-            fn($m) => '<a href="' . $this->sanitizeUrl($m[2]) . '" target="_blank" rel="noopener">' . $m[1] . '</a>',
+            fn ($m) => '<a href="'.$this->sanitizeUrl($m[2]).'" target="_blank" rel="noopener">'.$m[1].'</a>',
             $html
         );
         $html = preg_replace('/^> (.+)$/m', '<blockquote>$1</blockquote>', $html);
         $html = preg_replace('/^- (.+)$/m', '<li>$1</li>', $html);
         $html = preg_replace('/(<li>.*<\/li>)/s', '<ul>$1</ul>', $html);
         $html = nl2br($html);
+
         return $html;
     }
 
@@ -338,7 +338,7 @@ class TicketCommentController extends Controller
     {
         preg_match_all('/@(\w+)/', $body, $matches);
         $usernames = array_unique($matches[1] ?? []);
-        
+
         if (empty($usernames)) {
             return [];
         }
@@ -352,9 +352,11 @@ class TicketCommentController extends Controller
     private function notifyMentions(array $mentions, TicketComment $comment, User $author): void
     {
         foreach ($mentions as $username => $userId) {
-            if ($userId === $author->id) continue;
+            if ($userId === $author->id) {
+                continue;
+            }
 
-            \App\Services\NotificationService::send(
+            NotificationService::send(
                 $userId,
                 'mention',
                 "شما در یک نظر به تیکت {$comment->ticket->ticket_code} منشن شدید",
@@ -371,7 +373,7 @@ class TicketCommentController extends Controller
      */
     private function notifyReply(TicketComment $parentComment, TicketComment $reply, User $author): void
     {
-        \App\Services\NotificationService::send(
+        NotificationService::send(
             $parentComment->user_id,
             'reply',
             "{$author->n_code} به نظر شما در تیکت {$reply->ticket->ticket_code} پاسخ داد",
@@ -387,7 +389,9 @@ class TicketCommentController extends Controller
      */
     private function notifyReaction(TicketComment $comment, User $reactor, string $reaction): void
     {
-        if ($comment->user_id === $reactor->id) return;
+        if ($comment->user_id === $reactor->id) {
+            return;
+        }
 
         $emojiMap = [
             '+1' => '👍',
@@ -400,7 +404,7 @@ class TicketCommentController extends Controller
 
         $emoji = $emojiMap[$reaction] ?? $reaction;
 
-        \App\Services\NotificationService::send(
+        NotificationService::send(
             $comment->user_id,
             'reaction',
             "{$reactor->n_code} واکنش {$emoji} را به نظر شما در تیکت {$comment->ticket->ticket_code} اضافه کرد",

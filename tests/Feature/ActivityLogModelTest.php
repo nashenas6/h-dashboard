@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
+covers(ActivityLog::class);
+
 class ActivityLogModelTest extends TestCase
 {
     use RefreshDatabase;

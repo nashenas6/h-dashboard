@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Session;
 use Livewire\Livewire;
 use Tests\TestCase;
 
+covers(Unit::class);
+
 uses(TestCase::class, RefreshDatabase::class);
 
 beforeEach(function () {

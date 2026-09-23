@@ -1,11 +1,18 @@
 <?php
 
+use App\Http\Middleware\LastUserActivity;
+use App\Http\Middleware\SafeRoleOrPermission;
+use App\Http\Middleware\SecurityHeaders;
+use App\Http\Middleware\ValidateUnitContext;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Http\Middleware\TrustProxies;
 use Illuminate\Http\Request;
+use Sentry\Laravel\Integration;
+use Spatie\Permission\Middleware\PermissionMiddleware;
+use Spatie\Permission\Middleware\RoleMiddleware;
+use Spatie\Permission\Middleware\RoleOrPermissionMiddleware;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -18,15 +25,16 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->statefulApi();
         $middleware->alias([
-            'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
-            'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
-            'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
-            'safe_role_or_permission' => \App\Http\Middleware\SafeRoleOrPermission::class,
-            'unit_context' => \App\Http\Middleware\ValidateUnitContext::class,
-            'last.activity' => \App\Http\Middleware\LastUserActivity::class,
+            'role' => RoleMiddleware::class,
+            'permission' => PermissionMiddleware::class,
+            'role_or_permission' => RoleOrPermissionMiddleware::class,
+            'safe_role_or_permission' => SafeRoleOrPermission::class,
+            'unit_context' => ValidateUnitContext::class,
+            'last.activity' => LastUserActivity::class,
         ]);
         $middleware->web(append: [
-            \App\Http\Middleware\LastUserActivity::class,
+            SecurityHeaders::class,
+            LastUserActivity::class,
         ]);
 
         // Trust proxies for HTTPS detection behind Cloudflare/load balancer
@@ -78,4 +86,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 ], 404);
             }
         });
+
+        // Register Sentry exception handler — captures unhandled exceptions and sends them to Sentry
+        Integration::handles($exceptions);
     })->create();

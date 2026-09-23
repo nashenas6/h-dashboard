@@ -4,9 +4,28 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class ActivityLog extends Model
 {
+    protected string $type;
+
+    protected ?string $description = null;
+
+    protected ?int $subject_id = null;
+
+    protected ?string $subject_type = null;
+
+    protected ?array $old_values = null;
+
+    protected ?array $new_values = null;
+
+    protected ?string $ip_address = null;
+
+    protected string $created_at;
+
+    protected string $updated_at;
+
     protected $fillable = [
         'user_id',
         'type',
@@ -29,7 +48,7 @@ class ActivityLog extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function subject()
+    public function subject(): MorphTo
     {
         return $this->morphTo();
     }

@@ -14,6 +14,8 @@ use Livewire\Livewire;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
+covers(User::class);
+
 uses(TestCase::class, RefreshDatabase::class);
 
 beforeEach(function () {

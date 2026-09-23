@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Http\Controllers\Api\UnitController;
 use App\Models\Person;
 use App\Models\Unit;
 use App\Models\UnitType;
@@ -12,6 +13,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Tests\TestCase;
+
+covers(UnitController::class);
 
 class UnitApiTest extends TestCase
 {

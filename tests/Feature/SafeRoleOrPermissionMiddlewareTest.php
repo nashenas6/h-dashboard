@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\SafeRoleOrPermission;
 use App\Models\Person;
 use App\Models\Unit;
 use App\Models\User;
@@ -7,6 +8,8 @@ use Database\Seeders\PermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Permission;
 use Tests\TestCase;
+
+covers(SafeRoleOrPermission::class);
 
 uses(TestCase::class, RefreshDatabase::class);
 

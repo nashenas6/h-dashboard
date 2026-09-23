@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Imports\HardwareImport;
 use App\Models\Estekhdam;
 use App\Models\Hardware;
 use App\Models\Person;
@@ -16,6 +17,8 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Session;
 use Livewire\Livewire;
 use Tests\TestCase;
+
+covers(HardwareImport::class);
 
 uses(TestCase::class, RefreshDatabase::class);
 

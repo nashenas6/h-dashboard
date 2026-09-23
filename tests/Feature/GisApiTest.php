@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Http\Controllers\Api\GisController;
 use App\Models\Hardware;
 use App\Models\Person;
 use App\Models\Ticket;
@@ -13,6 +14,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Tests\TestCase;
+
+covers(GisController::class);
 
 class GisApiTest extends TestCase
 {

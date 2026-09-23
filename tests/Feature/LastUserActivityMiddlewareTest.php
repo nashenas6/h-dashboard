@@ -1,11 +1,14 @@
 <?php
 
+use App\Http\Middleware\LastUserActivity;
 use App\Models\Person;
 use App\Models\Unit;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
+
+covers(LastUserActivity::class);
 
 uses(TestCase::class, RefreshDatabase::class);
 

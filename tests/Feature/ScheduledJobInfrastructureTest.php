@@ -2,11 +2,13 @@
 
 namespace Tests\Feature;
 
+use App\Console\Commands\PruneStaleCache;
 use App\Console\Kernel;
-use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;
+
+covers(PruneStaleCache::class);
 
 class ScheduledJobInfrastructureTest extends TestCase
 {

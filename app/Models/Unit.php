@@ -25,6 +25,22 @@ class Unit extends Model
         'boundary_id',
         'lat',
         'lng',
+        'is_active',
+        'can_receive_tickets',
+    ];
+
+    protected $casts = [
+        'can_receive_tickets' => 'boolean',
+        'is_active' => 'boolean',
+    ];
+
+    /**
+     * Attributes that should be cast.
+     * Using this instead of $attributes default since boolean cast
+     * does not apply when the attribute isn't set by Eloquent.
+     */
+    protected $attributes = [
+        'can_receive_tickets' => false,
     ];
 
     public function person(): HasMany
@@ -61,7 +77,7 @@ class Unit extends Model
     }
 
     // برای بارگذاری تمام سطوح زیرمجموعه به صورت خودکار
-    public function childrenRecursive()
+    public function childrenRecursive(): HasMany
     {
         return $this->children()->with('childrenRecursive');
     }
@@ -193,24 +209,20 @@ class Unit extends Model
      */
     public function scopeContainingPoint($query, float $lat, float $lng)
     {
-        return $query->whereExists(function ($q) use ($lat, $lng) {
-            $q->from('boundaries')
-                ->whereColumn('boundaries.unit_id', 'units.id')
-                ->whereRaw('ST_Contains(boundary, ST_GeomFromText(?, 4326))', ["POINT($lng $lat)"]);
+        // The unit↔boundary link is units.boundary_id (boundaries has no unit_id).
+        return $query->whereHas('boundary', function ($q) use ($lat, $lng) {
+            $q->whereRaw('ST_Contains(boundary, ST_GeomFromText(?, 4326))', ["POINT($lng $lat)"]);
         });
     }
 
     /**
      * Scope for spatial queries: find units whose boundary intersects with a polygon
      * Uses the spatial index on boundaries.boundary
-     * Optimized with EXISTS to better utilize spatial index
      */
     public function scopeIntersectsBoundary($query, string $wktPolygon)
     {
-        return $query->whereExists(function ($q) use ($wktPolygon) {
-            $q->from('boundaries')
-                ->whereColumn('boundaries.unit_id', 'units.id')
-                ->whereRaw('ST_Intersects(boundary, ST_GeomFromText(?, 4326))', [$wktPolygon]);
+        return $query->whereHas('boundary', function ($q) use ($wktPolygon) {
+            $q->whereRaw('ST_Intersects(boundary, ST_GeomFromText(?, 4326))', [$wktPolygon]);
         });
     }
 
@@ -239,11 +251,28 @@ class Unit extends Model
      */
     public function scopeWithinDistance($query, float $lat, float $lng, float $radiusMeters)
     {
-        // MySQL/MariaDB: Use ST_GeomFromText instead of ST_Point (PostGIS-specific)
+        // PostGIS function name is ST_DistanceSphere (no underscore); the old
+        // MySQL-style ST_Distance_Sphere does not exist on this stack.
         $pointWkt = "POINT($lng $lat)";
 
         return $query->whereHas('boundary', function ($q) use ($pointWkt, $radiusMeters) {
-            $q->whereRaw('ST_Distance_Sphere(boundary, ST_GeomFromText(?, 4326)) <= ?', [$pointWkt, $radiusMeters]);
+            $q->whereRaw('ST_DistanceSphere(boundary, ST_GeomFromText(?, 4326)) <= ?', [$pointWkt, $radiusMeters]);
         });
+    }
+
+    /**
+     * تیکت‌های مرتبط با این واحد.
+     */
+    public function tickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class);
+    }
+
+    /**
+     * وظایف (todos) مرتبط با این واحد.
+     */
+    public function todos(): HasMany
+    {
+        return $this->hasMany(Todo::class);
     }
 }

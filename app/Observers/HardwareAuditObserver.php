@@ -5,23 +5,34 @@ namespace App\Observers;
 use App\Models\Hardware;
 use App\Models\HardwareAudit;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
 
 class HardwareAuditObserver
 {
+    /**
+     * Check if audit logging should be suppressed.
+     *
+     * Supports both static flag (standard PHP-FPM) and request attributes
+     * (Laravel Octane / long-running workers).
+     */
+    protected function shouldSuppress(): bool
+    {
+        return Hardware::$suppressAudit
+            || request()->attributes->get('suppress_audit', false);
+    }
+
     /**
      * Handle the Hardware "created" event.
      */
     public function created(Hardware $hardware): void
     {
-        if (Hardware::$suppressAudit) {
+        if ($this->shouldSuppress()) {
             return;
         }
 
         $fields = [
-            'pc_name', 'type', 'os', 'cpu', 'ram', 'hdd', 'net_type',
+            'n_code', 'pc_name', 'type', 'os', 'cpu', 'ram', 'hdd', 'net_type',
             'switch', 'port', 'vlan', 'motherboard', 'comments',
-            'ip_valid', 'ip_local', 'mac', 'shutdown', 'mark', 'clean_at'
+            'ip_valid', 'ip_local', 'mac', 'shutdown', 'mark', 'clean_at',
         ];
         $changes = [];
         foreach ($fields as $field) {
@@ -45,13 +56,13 @@ class HardwareAuditObserver
      */
     public function updating(Hardware $hardware): void
     {
-        if (Hardware::$suppressAudit) {
+        if ($this->shouldSuppress()) {
             return;
         }
 
         $changes = $this->getChangedFields($hardware);
 
-        if (!empty($changes)) {
+        if (! empty($changes)) {
             $this->recordAudit($hardware, 'updated', $changes, $this->detectSource());
         }
     }
@@ -61,7 +72,7 @@ class HardwareAuditObserver
      */
     public function deleting(Hardware $hardware): void
     {
-        if (Hardware::$suppressAudit) {
+        if ($this->shouldSuppress()) {
             return;
         }
 
@@ -74,7 +85,7 @@ class HardwareAuditObserver
      */
     public function forceDeleted(Hardware $hardware): void
     {
-        if (Hardware::$suppressAudit) {
+        if ($this->shouldSuppress()) {
             return;
         }
 
@@ -102,8 +113,8 @@ class HardwareAuditObserver
             'action' => 'rollback',
             'changes' => $rollbackChanges,
             'source' => $this->detectSource(),
-            'ip_address' => Request::capture()->ip(),
-            'user_agent' => Request::capture()->userAgent(),
+            'ip_address' => request()?->ip(),
+            'user_agent' => request()?->userAgent(),
         ]);
     }
 
@@ -131,7 +142,7 @@ class HardwareAuditObserver
     protected function recordAudit(Hardware $hardware, string $action, ?array $changes, string $source, ?int $hardwareId = null): void
     {
         $user = Auth::user();
-        $request = Request::capture();
+        $request = request();
 
         HardwareAudit::create([
             'hardware_id' => $hardwareId ?? $hardware->id,
@@ -190,6 +201,7 @@ class HardwareAuditObserver
         if (is_bool($value)) {
             return $value ? '1' : '0';
         }
+
         return (string) $value;
     }
 
@@ -207,6 +219,7 @@ class HardwareAuditObserver
         if (is_array($value)) {
             return json_encode($value, JSON_UNESCAPED_UNICODE);
         }
+
         return (string) $value;
     }
 }

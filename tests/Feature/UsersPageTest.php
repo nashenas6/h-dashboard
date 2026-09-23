@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Session;
 use Livewire\Livewire;
 use Tests\TestCase;
 
+covers(User::class);
+
 class UsersPageTest extends TestCase
 {
     use RefreshDatabase;

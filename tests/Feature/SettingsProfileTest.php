@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\Person;
+use App\Models\Ticket;
+use App\Models\Todo;
 use App\Models\Unit;
 use App\Models\User;
 use Database\Seeders\PermissionSeeder;
@@ -13,6 +15,8 @@ use Illuminate\Support\Facades\Session;
 use Livewire\Livewire;
 use Tests\TestCase;
 
+covers(User::class);
+
 class SettingsProfileTest extends TestCase
 {
     use RefreshDatabase;
@@ -21,7 +25,6 @@ class SettingsProfileTest extends TestCase
     {
         parent::setUp();
         $this->seed(PermissionSeeder::class);
-
         DB::table('tahsils')->insert(['id' => 1, 'name' => 'Test']);
         DB::table('estekhdams')->insert(['id' => 1, 'name' => 'Test']);
         DB::table('semats')->insert(['id' => 1, 'name' => 'Test']);
@@ -58,7 +61,6 @@ class SettingsProfileTest extends TestCase
     {
         $user = $this->createUserWithUnit();
         $user->update(['settings' => [
-            'email_notifications' => false,
             'browser_notifications' => true,
             'dashboard_refresh' => 30,
             'compact_mode' => true,
@@ -66,7 +68,6 @@ class SettingsProfileTest extends TestCase
         $this->actingAs($user);
 
         Livewire::test('settings.index')
-            ->assertSet('emailNotifications', false)
             ->assertSet('browserNotifications', true)
             ->assertSet('dashboardRefresh', 30)
             ->assertSet('compactMode', true);
@@ -78,7 +79,6 @@ class SettingsProfileTest extends TestCase
         $this->actingAs($user);
 
         Livewire::test('settings.index')
-            ->assertSet('emailNotifications', true)
             ->assertSet('browserNotifications', false)
             ->assertSet('dashboardRefresh', 0)
             ->assertSet('compactMode', false);
@@ -90,14 +90,12 @@ class SettingsProfileTest extends TestCase
         $this->actingAs($user);
 
         Livewire::test('settings.index')
-            ->set('emailNotifications', false)
             ->set('browserNotifications', true)
             ->set('dashboardRefresh', 60)
             ->set('compactMode', true)
             ->call('save');
 
         $user->refresh();
-        $this->assertEquals(false, $user->settings['email_notifications']);
         $this->assertEquals(true, $user->settings['browser_notifications']);
         $this->assertEquals(60, $user->settings['dashboard_refresh']);
         $this->assertEquals(true, $user->settings['compact_mode']);
@@ -133,12 +131,11 @@ class SettingsProfileTest extends TestCase
         $user = $this->createUserWithUnit();
         $unit = Unit::first();
 
-        // Create tickets for this user
-        \App\Models\Ticket::create([
+        Ticket::create([
             'ticket_code' => 'TKT-001', 'user_id' => $user->id, 'unit_id' => $unit->id,
             'subject' => 'تست', 'content' => 'متن', 'priority' => 'normal', 'status' => 'created',
         ]);
-        \App\Models\Ticket::create([
+        Ticket::create([
             'ticket_code' => 'TKT-002', 'user_id' => $user->id, 'unit_id' => $unit->id,
             'subject' => 'تست ۲', 'content' => 'متن', 'priority' => 'normal', 'status' => 'completed',
         ]);
@@ -156,8 +153,8 @@ class SettingsProfileTest extends TestCase
         $user = $this->createUserWithUnit();
         $unit = Unit::first();
 
-        \App\Models\Todo::factory()->completed()->create(['unit_id' => $unit->id]);
-        \App\Models\Todo::factory()->pending()->create(['unit_id' => $unit->id]);
+        Todo::factory()->completed()->create(['unit_id' => $unit->id]);
+        Todo::factory()->pending()->create(['unit_id' => $unit->id]);
 
         $this->actingAs($user);
 

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Http\Controllers\Api\HardwareController;
 use App\Models\Person;
 use App\Models\Unit;
 use App\Models\User;
@@ -11,6 +12,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Livewire;
 use Tests\TestCase;
+
+covers(HardwareController::class);
 
 uses(TestCase::class, RefreshDatabase::class);
 
@@ -66,7 +69,7 @@ test('web login fails with invalid credentials', function () {
 test('logout invalidates session and redirects', function () {
     $this->actingAs($this->user);
 
-    $this->get('/logout')
+    $this->post('/logout')
         ->assertRedirect('/');
 
     $this->assertGuest();

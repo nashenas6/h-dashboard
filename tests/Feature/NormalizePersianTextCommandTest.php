@@ -1,10 +1,13 @@
 <?php
 
+use App\Console\Commands\NormalizePersianText;
 use App\Models\Hardware;
 use App\Models\Person;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
+
+covers(NormalizePersianText::class);
 
 uses(TestCase::class, RefreshDatabase::class);
 

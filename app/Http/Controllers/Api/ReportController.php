@@ -3,23 +3,22 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UnitScopedRequest;
 use App\Models\Ticket;
 use App\Models\Todo;
 use App\Models\Unit;
-use App\Services\AccessService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Morilog\Jalali\Jalalian;
 
 class ReportController extends Controller
 {
-    public function units(Request $request): JsonResponse
+    public function units(UnitScopedRequest $request): JsonResponse
     {
-        $accessibleIds = app(AccessService::class)->accessibleUnitIds($request->user());
+        $accessibleIds = $request->accessibleIds();
         $version = Cache::get('report_units_version', 0);
-        $cacheKey = "report_units:v{$version}:" . md5(json_encode($accessibleIds));
+        $cacheKey = "report_units:v{$version}:".md5(json_encode($accessibleIds));
 
         $data = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($accessibleIds) {
             // Single query: total + with_boundary via conditional aggregation (was 2 count queries)
@@ -50,11 +49,11 @@ class ReportController extends Controller
         return response()->json($data);
     }
 
-    public function todos(Request $request): JsonResponse
+    public function todos(UnitScopedRequest $request): JsonResponse
     {
-        $accessibleIds = app(AccessService::class)->accessibleUnitIds($request->user());
+        $accessibleIds = $request->accessibleIds();
         $version = Cache::get('report_todos_version', 0);
-        $cacheKey = "report_todos:v{$version}:" . md5(json_encode($accessibleIds));
+        $cacheKey = "report_todos:v{$version}:".md5(json_encode($accessibleIds));
 
         $data = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($accessibleIds) {
             $now = now();
@@ -63,14 +62,14 @@ class ReportController extends Controller
             $stats = Todo::whereIn('unit_id', $accessibleIds)
                 ->selectRaw(
                     'SUM(CASE WHEN is_completed THEN 1 ELSE 0 END) as completed, '
-                    . 'SUM(CASE WHEN NOT is_completed THEN 1 ELSE 0 END) as pending, '
-                    . 'SUM(CASE WHEN NOT is_completed AND end_at IS NOT NULL AND end_at < ? THEN 1 ELSE 0 END) as overdue',
+                    .'SUM(CASE WHEN NOT is_completed THEN 1 ELSE 0 END) as pending, '
+                    .'SUM(CASE WHEN NOT is_completed AND end_at IS NOT NULL AND end_at < ? THEN 1 ELSE 0 END) as overdue',
                     [$now]
                 )
                 ->first();
 
             $byDay = Todo::whereIn('unit_id', $accessibleIds)
-                ->selectRaw("date(start_at) as day, count(*) as count")
+                ->selectRaw('date(start_at) as day, count(*) as count')
                 ->groupBy('day')
                 ->orderBy('day')
                 ->get()
@@ -99,11 +98,11 @@ class ReportController extends Controller
         return response()->json($data);
     }
 
-    public function tickets(Request $request): JsonResponse
+    public function tickets(UnitScopedRequest $request): JsonResponse
     {
-        $accessibleIds = app(AccessService::class)->accessibleUnitIds($request->user());
+        $accessibleIds = $request->accessibleIds();
         $version = Cache::get('report_tickets_version', 0);
-        $cacheKey = "report_tickets:v{$version}:" . md5(json_encode($accessibleIds));
+        $cacheKey = "report_tickets:v{$version}:".md5(json_encode($accessibleIds));
 
         $data = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($accessibleIds) {
             $query = Ticket::whereIn('unit_id', $accessibleIds);
@@ -121,7 +120,7 @@ class ReportController extends Controller
                 ->toArray();
 
             $byDay = (clone $query)
-                ->selectRaw("date(created_at) as day, count(*) as count")
+                ->selectRaw('date(created_at) as day, count(*) as count')
                 ->groupBy('day')
                 ->orderBy('day')
                 ->get()

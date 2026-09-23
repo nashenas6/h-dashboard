@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
+covers(Person::class);
+
 class PersonModelTest extends TestCase
 {
     use RefreshDatabase;
@@ -30,6 +32,7 @@ class PersonModelTest extends TestCase
     protected function createPerson(array $attrs = []): Person
     {
         $unit = Unit::firstOrCreate(['name' => 'واحد تست']);
+
         return Person::create(array_merge([
             'n_code' => (string) fake()->unique()->numerify('##########'),
             'f_name' => 'علی',

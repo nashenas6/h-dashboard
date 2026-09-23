@@ -2,9 +2,12 @@
 
 namespace Tests\Unit;
 
+use App\Services\CacheInvalidationService;
 use App\Services\CacheInvalidationServiceInterface;
 use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
+
+covers(CacheInvalidationService::class);
 
 class CacheInvalidationServiceTest extends TestCase
 {

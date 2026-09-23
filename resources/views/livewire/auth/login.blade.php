@@ -1,9 +1,8 @@
 <?php
-
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Rule;
 use Livewire\Attributes\Title;
-use Livewire\Component; // <--- ✅ تغییر اصلی: حذف Volt
+use Livewire\Component;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
@@ -11,10 +10,11 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
-new
-#[Layout('components.layouts.auth')]
-#[Title('Login')]
-class extends Component {
+return new class extends Component
+{
+    protected $layout = 'components.layouts.auth';
+
+    public string $title = 'Login';
 
     #[Rule('required')]
     public string $n_code = '';
@@ -47,15 +47,16 @@ class extends Component {
         }
 
         RateLimiter::clear($this->throttleKey());
-        Session::regenerate();
 
-        // اطمینان از ذخیره remember me
-        Auth::login(auth()->user(), $this->remember);
+        // لاگین موفق - سشن ری‌جنریت میشه خودکار توسط Laravel
+        Session::regenerate();
 
         // ثبت فعالیت ورود
         \App\Services\ActivityLogService::login('ورود موفق به سیستم با کد ملی: ' . $this->n_code);
 
-        return redirect()->intended('/');
+        // در Livewire 3 از redirect() برای ناوبری کامل استفاده می‌کنیم
+        // navigate: true باعث میشه Livewire به جای full reload، wire:navigate استفاده کنه
+        return $this->redirect('/', navigate: true);
     }
 
     /**
@@ -87,7 +88,6 @@ class extends Component {
         return Str::transliterate(Str::lower($this->n_code).'|'.request()->ip());
     }
 };
-
 ?>
 
 {{--  stitch-inspired: woven art + animations, keeps maryUI theme + theme selector  --}}
@@ -234,8 +234,7 @@ class extends Component {
 
                 {{-- Footer --}}
                 <p class="text-center text-sm text-base-content/50">
-                    حساب کاربری ندارید؟
-                    <a href="/register" class="text-primary font-medium hover:underline">ثبت‌نام کنید</a>
+                    برای ثبت‌نام با مدیر سیستم تماس بگیرید
                 </p>
             </div>
 

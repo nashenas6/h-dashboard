@@ -12,6 +12,7 @@ use Livewire\Attributes\Url;
 use Livewire\Attributes\Computed;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use App\Services\CacheInvalidationServiceInterface;
 
 new class extends Component
 {
@@ -68,7 +69,7 @@ new class extends Component
         $user = auth()->user();
         $units = [];
 
-        if (strlen($this->unitSearch) > 1) {
+        if (mb_strlen($this->unitSearch) > 1) {
             $units = Unit::where('name', 'like', '%' . $this->unitSearch . '%')
                 ->where('can_receive_tickets', true)
                 ->where('id', '!=', auth()->user()->person?->u_id)
@@ -85,7 +86,7 @@ new class extends Component
     {
         $user = auth()->user();
 
-        $query = Ticket::with(['user:id,n_code', 'unit:id,name']);
+        $query = Ticket::with(['user' => fn ($q) => $q->select('id', 'n_code')->with('person:f_name,l_name'), 'unit:id,name']);
 
         if ($this->viewMode === 'received') {
             $query->accessible();
@@ -104,12 +105,20 @@ new class extends Component
         }
 
         if ($this->dateFrom) {
-            $miladiFrom = \Morilog\Jalali\Jalalian::fromFormat('Y/m/d', $this->dateFrom)->toCarbon()->startOfDay();
-            $query->where('created_at', '>=', $miladiFrom);
+            try {
+                $miladiFrom = \Morilog\Jalali\Jalalian::fromFormat('Y/m/d', $this->dateFrom)->toCarbon()->startOfDay();
+                $query->where('created_at', '>=', $miladiFrom);
+            } catch (\Throwable) {
+                // Invalid Jalali date string — ignore filter
+            }
         }
         if ($this->dateTo) {
-            $miladiTo = \Morilog\Jalali\Jalalian::fromFormat('Y/m/d', $this->dateTo)->toCarbon()->endOfDay();
-            $query->where('created_at', '<=', $miladiTo);
+            try {
+                $miladiTo = \Morilog\Jalali\Jalalian::fromFormat('Y/m/d', $this->dateTo)->toCarbon()->endOfDay();
+                $query->where('created_at', '<=', $miladiTo);
+            } catch (\Throwable) {
+                // Invalid Jalali date string — ignore filter
+            }
         }
         if (!empty($this->search)) {
             $query->where(function ($q) {
@@ -240,6 +249,10 @@ new class extends Component
         }
 
         DB::transaction(function () use ($ticketIds, $count, $now, $userId, $bulkNote) {
+            // Issue #531: capture old statuses BEFORE the bulk update
+            $oldStatuses = Ticket::whereIn('id', $ticketIds)
+                ->pluck('status', 'id');
+
             if ($this->bulkAction === 'complete') {
                 // ۲. یک UPDATE برای همه
                 Ticket::whereIn('id', $ticketIds)->update([
@@ -247,9 +260,11 @@ new class extends Component
                     'completed_at' => $now,
                 ]);
                 // Issue #378/#389: bulk update bypasses Eloquent events — bump caches manually
-                Cache::increment('report_tickets_version');
-                Cache::increment('gis_version');
-                Cache::increment('calendar_version');
+                $cache = app(CacheInvalidationServiceInterface::class);
+                $cache->increment('report_tickets');
+                $cache->increment('gis');
+                $cache->increment('calendar');
+                $cache->increment('dashboard');
 
                 // ۳. یک batch INSERT برای فعالیت‌ها
                 $activityRows = $ticketIds->map(fn($id) => [
@@ -262,10 +277,23 @@ new class extends Component
                 ])->toArray();
                 TaskActivity::insert($activityRows);
 
-                // ActivityLogService - برای هر تیکت جداگانه (جدول activity_logs جداگانه است)
-                $tickets = Ticket::whereIn('id', $ticketIds)->get(['id', 'ticket_code', 'status']);
+                // ActivityLogService - با استفاده از وضعیت قبل از آپدیت
+                $tickets = Ticket::whereIn('id', $ticketIds)->get(['id', 'ticket_code', 'status', 'task_id']);
+                $completedTaskIds = $tickets->pluck('task_id')->filter()->unique();
+
                 foreach ($tickets as $ticket) {
-                    \App\Services\ActivityLogService::updated($ticket, ['status' => $ticket->status], ['status' => 'completed'], "تکمیل دسته‌ای تیکت {$ticket->ticket_code}");
+                    $oldStatus = $oldStatuses->get($ticket->id, $ticket->status);
+                    \App\Services\ActivityLogService::updated($ticket, ['status' => $oldStatus], ['status' => 'completed'], "تکمیل دسته‌ای تیکت {$ticket->ticket_code}");
+                }
+
+                // Plan 005: Auto-complete parent tasks where all child tickets are completed
+                foreach ($completedTaskIds as $taskId) {
+                    $incompleteCount = Ticket::where('task_id', $taskId)
+                        ->where('status', '!=', 'completed')
+                        ->count();
+                    if ($incompleteCount === 0) {
+                        \App\Models\Todo::where('id', $taskId)->update(['is_completed' => true]);
+                    }
                 }
             }
 
@@ -275,9 +303,11 @@ new class extends Component
                     'current_assignee_id' => null,
                 ]);
                 // Issue #378/#389: bulk update bypasses Eloquent events — bump caches manually
-                Cache::increment('report_tickets_version');
-                Cache::increment('gis_version');
-                Cache::increment('calendar_version');
+                $cache = app(CacheInvalidationServiceInterface::class);
+                $cache->increment('report_tickets');
+                $cache->increment('gis');
+                $cache->increment('calendar');
+                $cache->increment('dashboard');
 
                 $activityRows = $ticketIds->map(fn($id) => [
                     'ticket_id' => $id,
@@ -289,9 +319,11 @@ new class extends Component
                 ])->toArray();
                 TaskActivity::insert($activityRows);
 
+                // Issue #531: use actual old status instead of hardcoded 'accepted'
                 $tickets = Ticket::whereIn('id', $ticketIds)->get(['id', 'ticket_code', 'status']);
                 foreach ($tickets as $ticket) {
-                    \App\Services\ActivityLogService::updated($ticket, ['status' => 'accepted'], ['status' => 'forwarded'], "ارجاع دسته‌ای تیکت {$ticket->ticket_code}");
+                    $oldStatus = $oldStatuses->get($ticket->id, $ticket->status);
+                    \App\Services\ActivityLogService::updated($ticket, ['status' => $oldStatus], ['status' => 'forwarded'], "ارجاع دسته‌ای تیکت {$ticket->ticket_code}");
                 }
             }
         });
@@ -323,11 +355,15 @@ new class extends Component
     public function showTicket($id): void
     {
         $accessibleIds = app(AccessService::class)->accessibleUnitIds();
-        
+
         $ticket = Ticket::with(['attachments', 'activities.attachments', 'activities.user', 'user', 'unit'])
             ->whereIn('unit_id', $accessibleIds)
-            ->findOrFail($id);
-            
+            ->find($id);
+
+        if (! $ticket) {
+            return;
+        }
+
         $this->showingTicket = $ticket;
         $this->showModal = true;
     }
@@ -386,10 +422,37 @@ new class extends Component
     public function acceptTicket($ticketId): void
     {
         $accessibleIds = app(AccessService::class)->accessibleUnitIds();
-        
-        $ticket = Ticket::whereIn('unit_id', $accessibleIds)->findOrFail($ticketId);
-        
-        DB::transaction(function () use ($ticket) {
+
+        $ticket = Ticket::whereIn('unit_id', $accessibleIds)->find($ticketId);
+
+        if (! $ticket) {
+            return;
+        }
+
+        // Capture old status BEFORE any changes (Plan 003: dynamic, not hardcoded)
+        $oldStatus = $ticket->status;
+
+        // Plan 002: Only allow accepting from 'created' or 'forwarded' status
+        if ($oldStatus !== 'created' && $oldStatus !== 'forwarded') {
+            $this->dispatch('swal', [
+                'title' => 'تیکت قبلاً پذیرفته شده است',
+                'icon' => 'warning',
+            ]);
+            return;
+        }
+
+        DB::transaction(function () use ($ticket, $oldStatus) {
+            // Plan 002: Pessimistic lock to prevent concurrent accept
+            $locked = DB::select('SELECT id, status FROM tickets WHERE id = ? FOR UPDATE', [$ticket->id]);
+
+            if ($locked[0]->status !== $oldStatus) {
+                $this->dispatch('swal', [
+                    'title' => 'تیکت قبلاً پذیرفته شده است',
+                    'icon' => 'warning',
+                ]);
+                return;
+            }
+
             $ticket->update([
                 'status' => 'accepted',
                 'current_assignee_id' => auth()->id(),
@@ -399,17 +462,17 @@ new class extends Component
             $ticket->activities()->create([
                 'user_id' => auth()->id(),
                 'action' => 'accepted',
-                'description' => 'تیکت توسط کارشناس تایید شد و مسئولیت آن پذیرفته شد.'
+                'description' => 'تیکت توسط کارشناس تایید شد و مسئولیت آن پذیرفته شد.',
             ]);
-        });
 
-        // ثبت فعالیت
-        \App\Services\ActivityLogService::updated(
-            $ticket,
-            ['status' => 'created'],
-            ['status' => 'accepted'],
-            "پذیرش تیکت {$ticket->ticket_code}"
-        );
+            // Plan 003: Use dynamic old status, not hardcoded 'created'
+            \App\Services\ActivityLogService::updated(
+                $ticket,
+                ['status' => $oldStatus],
+                ['status' => 'accepted'],
+                "پذیرش تیکت {$ticket->ticket_code}"
+            );
+        });
 
         $this->dispatch('swal', ['title' => 'تیکت پذیرفته شد', 'icon' => 'success']);
         $this->closeDetail();
@@ -417,28 +480,30 @@ new class extends Component
 
     public function rejectTicket($ticketId): void
     {
-        try {
-            $ticket = Ticket::where('unit_id', auth()->user()->person?->u_id)->findOrFail($ticketId);
+        $accessibleIds = app(AccessService::class)->accessibleUnitIds();
+        $ticket = Ticket::whereIn('unit_id', $accessibleIds)->find($ticketId);
 
-            \DB::transaction(function () use ($ticket) {
-                $ticket->update([
-                    'status' => 'rejected',
-                    'current_assignee_id' => auth()->id(),
-                ]);
+        if (! $ticket) {
+            $this->dispatch('swal', ['title' => 'تیکت یافت نشد.', 'icon' => 'error']);
 
-                $ticket->activities()->create([
-                    'user_id' => auth()->id(),
-                    'action' => 'rejected',
-                    'description' => 'تیکت توسط واحد ' . (auth()->user()->person?->unit?->name ?? 'بدون واحد') . ' رد شد.',
-                ]);
-            });
-
-            $this->dispatch('swal', ['title' => 'تیکت با موفقیت رد شد', 'icon' => 'info']);
-            $this->closeDetail();
-        } catch (\Exception $e) {
-            $this->dispatch('swal', ['title' => 'خطایی رخ داد', 'icon' => 'error']);
-            $this->closeDetail();
+            return;
         }
+
+        \DB::transaction(function () use ($ticket) {
+            $ticket->update([
+                'status' => 'rejected',
+                'current_assignee_id' => auth()->id(),
+            ]);
+
+            $ticket->activities()->create([
+                'user_id' => auth()->id(),
+                'action' => 'rejected',
+                'description' => 'تیکت توسط واحد '.(auth()->user()->person?->unit?->name ?? 'بدون واحد').' رد شد.',
+            ]);
+        });
+
+        $this->dispatch('swal', ['title' => 'تیکت با موفقیت رد شد', 'icon' => 'info']);
+        $this->closeDetail();
     }
 
     public function openCompletionModal($id): void
@@ -792,7 +857,7 @@ new class extends Component
                 @if(!empty($units))
                 <div class="absolute z-50 w-full mt-1 bg-base-100 border border-base-300 rounded-lg shadow-xl max-h-40 overflow-y-auto">
                     @foreach($units as $u)
-                    <button type="button" wire:click="selectTargetUnit({{ $u['id'] }}, '{{ $u['name'] }}')"
+                    <button type="button" wire:click="selectTargetUnit({{ $u['id'] }}, @js($u['name']))"
                         class="w-full text-right px-4 py-2 hover:bg-primary hover:text-white text-sm transition-colors border-b last:border-0">
                         {{ $u['name'] }}
                     </button>

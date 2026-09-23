@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Livewire\Tickets\TicketComments;
 use App\Models\Person;
 use App\Models\Ticket;
 use App\Models\TicketComment;
@@ -14,6 +13,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Livewire\Livewire;
 use Tests\TestCase;
+
+covers(TicketComment::class);
 
 class TicketCommentsLivewireTest extends TestCase
 {
@@ -58,13 +59,13 @@ class TicketCommentsLivewireTest extends TestCase
 
     public function test_component_renders(): void
     {
-        Livewire::test(TicketComments::class)
+        Livewire::test('tickets.ticket-comments')
             ->assertOk();
     }
 
     public function test_can_add_comment_via_livewire(): void
     {
-        Livewire::test(TicketComments::class)
+        Livewire::test('tickets.ticket-comments')
             ->call('openForTicket', $this->ticket->id)
             ->assertSet('showModal', true)
             ->set('body', 'کامنت از وب')
@@ -86,7 +87,7 @@ class TicketCommentsLivewireTest extends TestCase
             'body' => 'والد',
         ]);
 
-        Livewire::test(TicketComments::class)
+        Livewire::test('tickets.ticket-comments')
             ->call('openForTicket', $this->ticket->id)
             ->call('startReply', $parent->id)
             ->assertSet('replyToId', $parent->id)
@@ -109,7 +110,7 @@ class TicketCommentsLivewireTest extends TestCase
             'body' => 'قبل',
         ]);
 
-        Livewire::test(TicketComments::class)
+        Livewire::test('tickets.ticket-comments')
             ->call('openForTicket', $this->ticket->id)
             ->call('startEdit', $comment->id)
             ->assertSet('editing', true)
@@ -131,7 +132,7 @@ class TicketCommentsLivewireTest extends TestCase
             'body' => 'حذف',
         ]);
 
-        Livewire::test(TicketComments::class)
+        Livewire::test('tickets.ticket-comments')
             ->call('openForTicket', $this->ticket->id)
             ->call('deleteComment', $comment->id);
 

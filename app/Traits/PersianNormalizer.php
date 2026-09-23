@@ -29,9 +29,38 @@ trait PersianNormalizer
     public static function normalizeForSearch(string $text): string
     {
         $text = self::normalize($text);
+
+        // Convert Persian (۰-۹) and Arabic-Indic (٠-٩) digits to Latin so a
+        // national code typed on a Persian keyboard matches the Latin digits
+        // stored in the database.
+        $text = strtr($text, [
+            '۰' => '0', '۱' => '1', '۲' => '2', '۳' => '3', '۴' => '4',
+            '۵' => '5', '۶' => '6', '۷' => '7', '۸' => '8', '۹' => '9',
+            '٠' => '0', '١' => '1', '٢' => '2', '٣' => '3', '٤' => '4',
+            '٥' => '5', '٦' => '6', '٧' => '7', '٨' => '8', '٩' => '9',
+        ]);
+
         // Remove extra spaces
         $text = preg_replace('/\s+/', ' ', trim($text));
 
         return $text;
+    }
+
+    /**
+     * Escape LIKE wildcards (% and _) for safe use in LIKE queries.
+     * Call this ONLY in query builders, NOT in data normalization.
+     */
+    public static function escapeLikeWildcards(string $text): string
+    {
+        return str_replace(['%', '_'], ['\\%', '\\_'], $text);
+    }
+
+    /**
+     * Normalize text AND escape LIKE wildcards — use in search query builders.
+     * Combines normalizeForSearch() + escapeLikeWildcards().
+     */
+    public static function normalizeForQuery(string $text): string
+    {
+        return self::escapeLikeWildcards(self::normalizeForSearch($text));
     }
 }

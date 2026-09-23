@@ -12,7 +12,10 @@ use Database\Seeders\PermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
+
+covers(TicketComment::class);
 
 class TicketCommentModelTest extends TestCase
 {
@@ -46,6 +49,7 @@ class TicketCommentModelTest extends TestCase
     protected function createTicket(): Ticket
     {
         $user = $this->createUserWithUnit();
+
         return Ticket::create([
             'ticket_code' => 'TKT-001',
             'user_id' => $user->id,
@@ -230,7 +234,7 @@ class TicketCommentModelTest extends TestCase
 
     // --- canBeEditedBy ---
 
-    public function test_canBeEditedBy_author_within_15_minutes(): void
+    public function test_can_be_edited_by_author_within_15_minutes(): void
     {
         $ticket = $this->createTicket();
         $user = User::first();
@@ -244,7 +248,7 @@ class TicketCommentModelTest extends TestCase
         $this->assertTrue($comment->canBeEditedBy($user));
     }
 
-    public function test_cannotBeEditedBy_different_user(): void
+    public function test_cannot_be_edited_by_different_user(): void
     {
         $ticket = $this->createTicket();
         $user = User::first();
@@ -266,7 +270,7 @@ class TicketCommentModelTest extends TestCase
         $this->assertFalse($comment->canBeEditedBy($otherUser));
     }
 
-    public function test_cannotBeEditedBy_author_after_15_minutes(): void
+    public function test_cannot_be_edited_by_author_after_15_minutes(): void
     {
         $ticket = $this->createTicket();
         $user = User::first();
@@ -276,7 +280,7 @@ class TicketCommentModelTest extends TestCase
             'user_id' => $user->id,
             'body' => 'نظر تست',
         ]);
-        \Illuminate\Support\Facades\DB::table('ticket_comments')
+        DB::table('ticket_comments')
             ->where('id', $comment->id)
             ->update(['created_at' => now()->subMinutes(20)]);
         $comment->refresh();
@@ -286,7 +290,7 @@ class TicketCommentModelTest extends TestCase
 
     // --- canBeDeletedBy ---
 
-    public function test_canBeDeletedBy_author(): void
+    public function test_can_be_deleted_by_author(): void
     {
         $ticket = $this->createTicket();
         $user = User::first();
@@ -300,12 +304,12 @@ class TicketCommentModelTest extends TestCase
         $this->assertTrue($comment->canBeDeletedBy($user));
     }
 
-    public function test_canBeDeletedBy_admin(): void
+    public function test_can_be_deleted_by_admin(): void
     {
         $ticket = $this->createTicket();
         $user = User::first();
 
-        \Spatie\Permission\Models\Role::create(['name' => 'admin', 'guard_name' => 'web']);
+        Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
         $user->assignRole('admin');
 
         $nCode2 = (string) fake()->unique()->numerify('##########');
@@ -325,7 +329,7 @@ class TicketCommentModelTest extends TestCase
         $this->assertTrue($comment->canBeDeletedBy($user));
     }
 
-    public function test_cannotBeDeletedBy_regular_user(): void
+    public function test_cannot_be_deleted_by_regular_user(): void
     {
         $ticket = $this->createTicket();
         $user = User::first();
@@ -384,5 +388,99 @@ class TicketCommentModelTest extends TestCase
 
         $this->assertIsBool($comment->is_system);
         $this->assertTrue($comment->is_system);
+    }
+
+    // Note: the original test_scope_user test above exercised a raw
+    // `->where('is_system', false)` query, so the actual scopeUser()
+    // method body was never invoked. This test calls the scope directly.
+
+    public function test_scope_user_invokes_scope(): void
+    {
+        $ticket = $this->createTicket();
+        $user = User::first();
+
+        TicketComment::create([
+            'ticket_id' => $ticket->id,
+            'user_id' => $user->id,
+            'body' => 'نظر کاربر',
+            'is_system' => false,
+        ]);
+        TicketComment::create([
+            'ticket_id' => $ticket->id,
+            'user_id' => $user->id,
+            'body' => 'سیستم',
+            'is_system' => true,
+        ]);
+
+        $this->assertCount(1, TicketComment::query()->user()->get());
+    }
+
+    // --- descendants (recursive) ---
+
+    public function test_comment_descendants_are_recursive(): void
+    {
+        $ticket = $this->createTicket();
+        $user = User::first();
+
+        $root = TicketComment::create([
+            'ticket_id' => $ticket->id,
+            'user_id' => $user->id,
+            'body' => 'والد',
+        ]);
+        $child = TicketComment::create([
+            'ticket_id' => $ticket->id,
+            'user_id' => $user->id,
+            'parent_id' => $root->id,
+            'body' => 'فرزند',
+        ]);
+        $grandchild = TicketComment::create([
+            'ticket_id' => $ticket->id,
+            'user_id' => $user->id,
+            'parent_id' => $child->id,
+            'body' => 'نوه',
+        ]);
+
+        $root->load('descendants');
+
+        $this->assertCount(1, $root->descendants);
+        $this->assertEquals($child->id, $root->descendants->first()->id);
+        $this->assertEquals($grandchild->id, $root->descendants->first()->descendants->first()->id);
+    }
+
+    // --- scopeWithReactionCounts ---
+
+    public function test_scope_with_reaction_counts_groups_by_reaction(): void
+    {
+        $ticket = $this->createTicket();
+        $user = User::first();
+
+        $comment = TicketComment::create([
+            'ticket_id' => $ticket->id,
+            'user_id' => $user->id,
+            'body' => 'نظر تست',
+        ]);
+
+        $nCode2 = (string) fake()->unique()->numerify('##########');
+        $unit = Unit::first();
+        Person::create([
+            'n_code' => $nCode2, 'f_name' => 'واکنش‌دهنده', 'l_name' => 'دوم',
+            't_id' => 1, 'e_id' => 1, 's_id' => 1, 'r_id' => 1, 'u_id' => $unit->id,
+        ]);
+        $otherUser = User::create(['n_code' => $nCode2, 'password' => Hash::make('password')]);
+
+        TicketCommentReaction::create([
+            'comment_id' => $comment->id, 'user_id' => $user->id, 'reaction' => '+1',
+        ]);
+        TicketCommentReaction::create([
+            'comment_id' => $comment->id, 'user_id' => $otherUser->id, 'reaction' => '+1',
+        ]);
+
+        $loaded = TicketComment::withReactionCounts()->find($comment->id);
+
+        // The withCount subquery collapses to a single total count of
+        // reactions on the comment (the inner groupBy is not preserved by
+        // withCount), so reaction_counts is an integer here.
+        $this->assertNotNull($loaded->reaction_counts);
+        $this->assertEquals(2, $loaded->reaction_counts);
     }
 }

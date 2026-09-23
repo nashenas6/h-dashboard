@@ -3,6 +3,7 @@
 use App\Models\Boundary;
 use App\Models\Person;
 use App\Models\Region;
+use App\Models\Ticket;
 use App\Models\Unit;
 use App\Models\User;
 use Database\Seeders\PermissionSeeder;
@@ -12,6 +13,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Livewire\Livewire;
 use Tests\TestCase;
+
+covers(Ticket::class);
 
 uses(TestCase::class, RefreshDatabase::class);
 
@@ -47,7 +50,6 @@ $guestProtectedRoutes = [
     '/search' => 'search.index',
     '/settings' => 'settings.index',
     '/profile' => 'profile.index',
-    '/tools' => 'tools.tools',
     '/dashboard' => 'dashboard',
     '/maps/route' => 'maps/route',
     '/maps/route2' => 'maps/route2',
@@ -111,6 +113,7 @@ $permissionRoutes = [
     '/activity-log' => 'activity-log.index',
     '/permissions' => 'permissions/index',
     '/roles' => 'roles/index',
+    '/tools' => 'tools.tools',
 ];
 
 foreach ($permissionRoutes as $route => $component) {
@@ -140,4 +143,10 @@ test('/roles loads for authorized user', function () {
     $this->actingAs($this->user);
     $this->user->givePermissionTo('manage_roles');
     Livewire::test('roles/index')->assertStatus(200);
+});
+
+test('/tools loads for authorized user', function () {
+    $this->actingAs($this->user);
+    $this->user->givePermissionTo('manage_users');
+    Livewire::test('tools.tools')->assertStatus(200);
 });

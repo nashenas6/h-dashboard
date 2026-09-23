@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
+covers(Todo::class);
+
 class TodoModelTest extends TestCase
 {
     use RefreshDatabase;

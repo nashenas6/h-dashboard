@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Http\Controllers\Api\HardwareController;
 use App\Models\Person;
 use App\Models\Unit;
 use App\Models\User;
@@ -9,8 +10,9 @@ use Database\Seeders\PermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Session;
 use Tests\TestCase;
+
+covers(HardwareController::class);
 
 class LogoutTest extends TestCase
 {
@@ -45,7 +47,7 @@ class LogoutTest extends TestCase
     {
         $user = $this->createUserWithUnit();
 
-        $response = $this->actingAs($user)->get('/logout');
+        $response = $this->actingAs($user)->post('/logout');
 
         $response->assertRedirect('/');
     }
@@ -54,7 +56,7 @@ class LogoutTest extends TestCase
     {
         $user = $this->createUserWithUnit();
 
-        $this->actingAs($user)->get('/logout');
+        $this->actingAs($user)->post('/logout');
 
         $this->assertGuest();
     }
@@ -63,7 +65,7 @@ class LogoutTest extends TestCase
     {
         $user = $this->createUserWithUnit();
 
-        $this->actingAs($user)->get('/logout');
+        $this->actingAs($user)->post('/logout');
 
         $this->assertDatabaseHas('activity_logs', [
             'type' => 'logout',
@@ -75,7 +77,7 @@ class LogoutTest extends TestCase
     {
         // Logout route is outside auth middleware but calls Auth::id()
         // Guest accessing logout should just redirect
-        $response = $this->get('/logout');
+        $response = $this->post('/logout');
 
         $response->assertRedirect('/');
     }
