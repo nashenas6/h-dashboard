@@ -49,6 +49,11 @@ test('escapeLikeWildcards returns text unchanged when no wildcards present', fun
     expect(NormalizerHelper::escapeLikeWildcards('سلام دنیا'))->toBe('سلام دنیا');
 });
 
+test('escapeLikeWildcards escapes backslashes before wildcards', function () {
+    expect(NormalizerHelper::escapeLikeWildcards('a\b%c_d'))
+        ->toBe('a\\\\b\\%c\\_d');
+});
+
 test('normalizeForQuery combines normalize and escape for Persian text with wildcards', function () {
     $input = "  ي ك %تست  \u{200C} ";
     $expected = 'ی ک \\%تست';

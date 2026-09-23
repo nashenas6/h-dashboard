@@ -264,3 +264,118 @@ it('filterUnit escapes LIKE wildcards — percent does not match all', function 
     // '%' is escaped, so it won't match 'Test Unit'
     expect($component->html())->not->toContain('PC-1');
 });
+
+it('filterCpu escapes LIKE wildcards — percent does not match all', function () {
+    $unit = Unit::create(['name' => 'Unit A']);
+    $tId = DB::table('tahsils')->insertGetId(['name' => 'T']);
+    $eId = DB::table('estekhdams')->insertGetId(['name' => 'E']);
+    $sId = DB::table('semats')->insertGetId(['name' => 'S']);
+    $rId = DB::table('radifs')->insertGetId(['name' => 'R']);
+    $nCode = (string) fake()->unique()->numerify('##########');
+    Person::create([
+        'n_code' => $nCode, 'f_name' => 'Test', 'l_name' => 'User',
+        't_id' => $tId, 'e_id' => $eId, 's_id' => $sId, 'r_id' => $rId,
+        'u_id' => $unit->id,
+    ]);
+    Hardware::create(['n_code' => $nCode, 'pc_name' => 'PC-1', 'type' => 'pc', 'cpu' => 'Intel i7']);
+
+    $user = makeUserInUnit($unit);
+
+    $component = Livewire::actingAs($user)
+        ->test('hardware.index')
+        ->set('filterCpu', '%');
+
+    expect($component->html())->not->toContain('PC-1');
+});
+
+it('filterRam escapes LIKE wildcards — percent does not match all', function () {
+    $unit = Unit::create(['name' => 'Unit A']);
+    $tId = DB::table('tahsils')->insertGetId(['name' => 'T']);
+    $eId = DB::table('estekhdams')->insertGetId(['name' => 'E']);
+    $sId = DB::table('semats')->insertGetId(['name' => 'S']);
+    $rId = DB::table('radifs')->insertGetId(['name' => 'R']);
+    $nCode = (string) fake()->unique()->numerify('##########');
+    Person::create([
+        'n_code' => $nCode, 'f_name' => 'Test', 'l_name' => 'User',
+        't_id' => $tId, 'e_id' => $eId, 's_id' => $sId, 'r_id' => $rId,
+        'u_id' => $unit->id,
+    ]);
+    Hardware::create(['n_code' => $nCode, 'pc_name' => 'PC-1', 'type' => 'pc', 'ram' => '8192']);
+
+    $user = makeUserInUnit($unit);
+
+    $component = Livewire::actingAs($user)
+        ->test('hardware.index')
+        ->set('filterRam', '%');
+
+    expect($component->html())->not->toContain('PC-1');
+});
+
+it('filterHdd escapes LIKE wildcards — percent does not match all', function () {
+    $unit = Unit::create(['name' => 'Unit A']);
+    $tId = DB::table('tahsils')->insertGetId(['name' => 'T']);
+    $eId = DB::table('estekhdams')->insertGetId(['name' => 'E']);
+    $sId = DB::table('semats')->insertGetId(['name' => 'S']);
+    $rId = DB::table('radifs')->insertGetId(['name' => 'R']);
+    $nCode = (string) fake()->unique()->numerify('##########');
+    Person::create([
+        'n_code' => $nCode, 'f_name' => 'Test', 'l_name' => 'User',
+        't_id' => $tId, 'e_id' => $eId, 's_id' => $sId, 'r_id' => $rId,
+        'u_id' => $unit->id,
+    ]);
+    Hardware::create(['n_code' => $nCode, 'pc_name' => 'PC-1', 'type' => 'pc', 'hdd' => 'SSD 500GB']);
+
+    $user = makeUserInUnit($unit);
+
+    $component = Livewire::actingAs($user)
+        ->test('hardware.index')
+        ->set('filterHdd', '%');
+
+    expect($component->html())->not->toContain('PC-1');
+});
+
+it('filterNetType escapes LIKE wildcards — percent does not match all', function () {
+    $unit = Unit::create(['name' => 'Unit A']);
+    $tId = DB::table('tahsils')->insertGetId(['name' => 'T']);
+    $eId = DB::table('estekhdams')->insertGetId(['name' => 'E']);
+    $sId = DB::table('semats')->insertGetId(['name' => 'S']);
+    $rId = DB::table('radifs')->insertGetId(['name' => 'R']);
+    $nCode = (string) fake()->unique()->numerify('##########');
+    Person::create([
+        'n_code' => $nCode, 'f_name' => 'Test', 'l_name' => 'User',
+        't_id' => $tId, 'e_id' => $eId, 's_id' => $sId, 'r_id' => $rId,
+        'u_id' => $unit->id,
+    ]);
+    Hardware::create(['n_code' => $nCode, 'pc_name' => 'PC-1', 'type' => 'pc', 'net_type' => 'wired']);
+
+    $user = makeUserInUnit($unit);
+
+    $component = Livewire::actingAs($user)
+        ->test('hardware.index')
+        ->set('filterNetType', '%');
+
+    expect($component->html())->not->toContain('PC-1');
+});
+
+it('filterSemat escapes LIKE wildcards — percent does not match all', function () {
+    $unit = Unit::create(['name' => 'Unit A']);
+    $tId = DB::table('tahsils')->insertGetId(['name' => 'T']);
+    $eId = DB::table('estekhdams')->insertGetId(['name' => 'E']);
+    $sId = DB::table('semats')->insertGetId(['name' => 'Doctor']);
+    $rId = DB::table('radifs')->insertGetId(['name' => 'R']);
+    $nCode = (string) fake()->unique()->numerify('##########');
+    Person::create([
+        'n_code' => $nCode, 'f_name' => 'Test', 'l_name' => 'User',
+        't_id' => $tId, 'e_id' => $eId, 's_id' => $sId, 'r_id' => $rId,
+        'u_id' => $unit->id,
+    ]);
+    Hardware::create(['n_code' => $nCode, 'pc_name' => 'PC-1', 'type' => 'pc']);
+
+    $user = makeUserInUnit($unit);
+
+    $component = Livewire::actingAs($user)
+        ->test('hardware.index')
+        ->set('filterSemat', '%');
+
+    expect($component->html())->not->toContain('PC-1');
+});

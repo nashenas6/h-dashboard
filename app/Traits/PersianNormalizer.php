@@ -47,12 +47,17 @@ trait PersianNormalizer
     }
 
     /**
-     * Escape LIKE wildcards (% and _) for safe use in LIKE queries.
+     * Escape LIKE wildcards (%, _, and the escape char itself) for safe use in LIKE queries.
+     * Backslash is escaped FIRST — order matters, otherwise the escapes get double-escaped.
      * Call this ONLY in query builders, NOT in data normalization.
      */
     public static function escapeLikeWildcards(string $text): string
     {
-        return str_replace(['%', '_'], ['\\%', '\\_'], $text);
+        return str_replace(
+            ['\\', '%', '_'],
+            ['\\\\', '\\%', '\\_'],
+            $text
+        );
     }
 
     /**
