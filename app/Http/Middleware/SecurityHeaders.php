@@ -17,7 +17,10 @@ class SecurityHeaders
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
 
         // CSP in report-only mode first — validate for 1-2 weeks before enforcing.
-        $response->headers->set('Content-Security-Policy-Report-Only', "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; connect-src 'self'; font-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; report-uri /csp-report");
+        // No report-uri/report-to: no reporting endpoint is registered (issue #742).
+        // report-uri is deprecated; reporting needs a separate-domain endpoint
+        // (report-to + Reporting-Endpoints) — an architecture decision, not a route.
+        $response->headers->set('Content-Security-Policy-Report-Only', "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; connect-src 'self'; font-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'");
 
         $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
 

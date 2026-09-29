@@ -33,8 +33,19 @@ test('Content-Security-Policy-Report-Only header has correct value', function ()
     $this->get('/login')
         ->assertHeader(
             'Content-Security-Policy-Report-Only',
-            "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; connect-src 'self'; font-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; report-uri /csp-report"
+            "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; connect-src 'self'; font-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
         );
+});
+
+test('CSP report-only header makes no reporting claim', function () {
+    // Issue #742: no /csp-report route is registered, so the header must not
+    // advertise one. report-uri is deprecated; proper reporting needs
+    // report-to + Reporting-Endpoints on a separate domain.
+    $csp = $this->get('/login')->headers->get('Content-Security-Policy-Report-Only');
+
+    expect($csp)->not->toContain('report-uri')
+        ->and($csp)->not->toContain('report-to')
+        ->and($csp)->not->toContain('csp-report');
 });
 
 test('Strict-Transport-Security header has correct value', function () {
