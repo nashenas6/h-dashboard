@@ -113,6 +113,34 @@ class AccessServiceTest extends TestCase
         $this->assertGreaterThan($unitBefore, $unitAfter);
     }
 
+    public function test_scope_reduction_takes_effect_immediately(): void
+    {
+        $parent = Unit::create(['name' => 'Parent']);
+        $child = Unit::create(['name' => 'Child', 'parent_id' => $parent->id]);
+        $user = $this->makeUserInUnit($parent);
+        $user->units()->attach($parent->id, ['role' => 'staff', 'is_primary' => true]);
+        Session::put('current_unit_id', $parent->id);
+        $this->actingAs($user);
+
+        // Initially accessible to both parent and child
+        $ids = app(AccessService::class)->accessibleUnitIds($user);
+        $this->assertContains($child->id, $ids);
+
+        // Reduce scope: detach parent, attach only a new unit
+        $newUnit = Unit::create(['name' => 'New Unit']);
+        $user->units()->detach($parent->id);
+        $user->units()->attach($newUnit->id, ['role' => 'staff', 'is_primary' => true]);
+        Session::put('current_unit_id', $newUnit->id);
+
+        // Clear cache to simulate what should happen
+        app(AccessService::class)->clearCache($user);
+
+        // Should immediately reflect reduced scope
+        $newIds = app(AccessService::class)->accessibleUnitIds($user);
+        $this->assertNotContains($child->id, $newIds);
+        $this->assertContains($newUnit->id, $newIds);
+    }
+
     public function test_accessible_unit_ids_is_cached_per_user(): void
     {
         $unit = Unit::create(['name' => 'Cached Unit']);
@@ -126,5 +154,39 @@ class AccessServiceTest extends TestCase
 
         $this->assertEquals($first, $second);
         $this->assertCount(1, $first);
+    }
+
+    public function test_accessible_unit_ids_cache_key_independent_of_base_units_order(): void
+    {
+        $parent1 = Unit::create(['name' => 'Parent 1']);
+        $parent2 = Unit::create(['name' => 'Parent 2']);
+        $child1 = Unit::create(['name' => 'Child 1', 'parent_id' => $parent1->id]);
+        $child2 = Unit::create(['name' => 'Child 2', 'parent_id' => $parent2->id]);
+        $user = $this->makeUserInUnit($parent1);
+        // Attach both parent units to user (no current_unit_id set)
+        $user->units()->attach($parent1->id, ['role' => 'staff', 'is_primary' => true]);
+        $user->units()->attach($parent2->id, ['role' => 'staff', 'is_primary' => false]);
+        // No current_unit_id -> baseUnitIds = [$parent1->id, $parent2->id] (order from pluck)
+        $this->actingAs($user);
+
+        Cache::put('unit_hierarchy_version', 0);
+
+        // First call - baseUnitIds order depends on DB pluck order
+        $first = app(AccessService::class)->accessibleUnitIds($user);
+
+        // Clear user's session to force re-derivation (but keep cache version same)
+        Session::forget('current_unit_id');
+
+        // Second call - should hit same cache regardless of pluck order
+        DB::enableQueryLog();
+        $second = app(AccessService::class)->accessibleUnitIds($user);
+        $queries = DB::getQueryLog();
+
+        $this->assertEqualsCanonicalizing($first, $second);
+        $this->assertNotEmpty($first);
+
+        // Filter to only CTE queries (descendant recursive CTE query used by AccessService)
+        $cteQueries = array_filter($queries, fn ($q) => str_contains($q['query'] ?? '', 'WITH RECURSIVE unit_tree'));
+        $this->assertCount(0, $cteQueries, 'No new CTE query should run for different baseUnitIds order');
     }
 }

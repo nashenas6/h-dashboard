@@ -9,6 +9,8 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Laravel\Sanctum\Http\Middleware\CheckAbilities;
+use Laravel\Sanctum\Http\Middleware\CheckForAnyAbility;
 use Sentry\Laravel\Integration;
 use Spatie\Permission\Middleware\PermissionMiddleware;
 use Spatie\Permission\Middleware\RoleMiddleware;
@@ -24,6 +26,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->statefulApi();
+        // Browser-submitted CSP reports arrive without a CSRF token (#742).
+        $middleware->validateCsrfTokens(except: ['csp-report']);
         $middleware->alias([
             'role' => RoleMiddleware::class,
             'permission' => PermissionMiddleware::class,
@@ -31,6 +35,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'safe_role_or_permission' => SafeRoleOrPermission::class,
             'unit_context' => ValidateUnitContext::class,
             'last.activity' => LastUserActivity::class,
+            'abilities' => CheckAbilities::class,
+            'ability' => CheckForAnyAbility::class,
         ]);
         $middleware->web(append: [
             SecurityHeaders::class,

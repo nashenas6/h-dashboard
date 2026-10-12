@@ -3,7 +3,6 @@
 use App\Models\Boundary;
 use App\Models\Person;
 use App\Models\Region;
-use App\Models\Ticket;
 use App\Models\Unit;
 use App\Models\User;
 use Database\Seeders\PermissionSeeder;
@@ -13,8 +12,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Livewire\Livewire;
 use Tests\TestCase;
-
-covers(Ticket::class);
 
 uses(TestCase::class, RefreshDatabase::class);
 
@@ -54,7 +51,6 @@ $guestProtectedRoutes = [
     '/maps/route' => 'maps/route',
     '/maps/route2' => 'maps/route2',
     '/maps/unit' => 'maps/unit',
-    '/maps/interactive' => 'maps/interactive',
     '/maps/point' => 'maps/point',
     '/it/networks' => 'it/networks',
     '/it/wireless' => 'it/wireless',

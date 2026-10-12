@@ -42,6 +42,8 @@ return new class extends Component
 
     public $u_id;
 
+    public ?string $phone = null;
+
     public ?int $editingId = null;
 
     public string $search = '';
@@ -75,20 +77,53 @@ return new class extends Component
         $this->reset(['filter_u_id', 'filter_s_id', 'filter_t_id', 'filter_e_id', 'filter_r_id', 'filterUnitModal']);
     }
 
+    /**
+     * The list filters carried into the Excel export as query params, so the
+     * download contains exactly the rows the table is showing.
+     *
+     * Livewire cannot return a file download, so the control is a plain
+     * `<a href>` — the parameters have to travel in the URL. The export
+     * re-applies them server-side and can only ever narrow the caller's
+     * accessible scope, never widen it.
+     *
+     * @return array<string, string|int>
+     */
+    public function exportQuery(): array
+    {
+        $params = array_filter([
+            'search' => trim($this->search),
+            'filter_u_id' => $this->filter_u_id,
+            'filter_s_id' => $this->filter_s_id,
+            'filter_t_id' => $this->filter_t_id,
+            'filter_e_id' => $this->filter_e_id,
+            'filter_r_id' => $this->filter_r_id,
+        ], fn ($value) => $value !== null && $value !== '' && $value !== false);
+
+        return $params;
+    }
+
     public function resetForm(): void
     {
         $this->resetValidation();
-        $this->reset(['n_code', 'f_name', 'l_name', 't_id', 'e_id', 's_id', 'r_id', 'u_id', 'editingId', 'formOpen', 'unitModal', 'showFilters', 'filter_u_id', 'filter_s_id', 'filter_t_id', 'filter_e_id', 'filter_r_id', 'filterUnitModal']);
+        $this->reset(['n_code', 'f_name', 'l_name', 't_id', 'e_id', 's_id', 'r_id', 'u_id', 'phone', 'editingId', 'formOpen', 'unitModal', 'showFilters', 'filter_u_id', 'filter_s_id', 'filter_t_id', 'filter_e_id', 'filter_r_id', 'filterUnitModal']);
     }
 
     public function startCreate(): void
     {
+        // #805: opening the write form is part of writing personnel.
+        $this->authorize('manage_personnel');
+
         $this->resetForm();
         $this->formOpen = true;
     }
 
     public function delete(PersonModel $person): void
     {
+        // #805: the route gate is the READ union `kargozini|manage_personnel`,
+        // but a delete is a write — the API refuses it without
+        // `manage_personnel` (routes/api.php), so the UI must too.
+        $this->authorize('manage_personnel');
+
         // Check organizational scope
         $accessibleIds = app(AccessService::class)->accessibleUnitIds();
         if (! in_array($person->u_id, $accessibleIds)) {
@@ -107,6 +142,12 @@ return new class extends Component
 
     public function savePerson(): void
     {
+        // #805: create/update are writes. The page's route gate is the READ
+        // union, so without this a `kargozini`-only user could create, edit
+        // and delete HR records — and the linked-user `user_units` sync
+        // below rewrites authorization reach, not just data.
+        $this->authorize('manage_personnel');
+
         $this->validate([
             'n_code' => 'required|string|size:10|unique:persons,n_code,'.($this->editingId ?: 'NULL'),
             'f_name' => 'required|string|max:255',
@@ -116,6 +157,9 @@ return new class extends Component
             's_id' => 'required|exists:semats,id',
             'r_id' => 'required|exists:radifs,id',
             'u_id' => 'required|exists:units,id',
+            // #738: free-text phone, optional, simple max length — no format
+            // constraint (see the migration's docblock).
+            'phone' => 'nullable|string|max:20',
         ]);
 
         if ($this->editingId) {
@@ -129,6 +173,15 @@ return new class extends Component
                 return;
             }
 
+            // #805: the check above validates the STORED u_id, but the update
+            // writes the submitted one — so a unit the actor cannot reach was
+            // writable. Re-validate the submitted value before it is stored.
+            if (! in_array($this->u_id, $accessibleIds)) {
+                $this->error('شما مجاز به انتقال این پرسنل به این واحد نیستید.', position: 'toast-bottom');
+
+                return;
+            }
+
             $person->update([
                 'n_code' => $this->n_code,
                 'f_name' => $this->f_name,
@@ -138,6 +191,7 @@ return new class extends Component
                 's_id' => $this->s_id,
                 'r_id' => $this->r_id,
                 'u_id' => $this->u_id,
+                'phone' => $this->phone,
             ]);
 
             if ($user = $person->user) {
@@ -164,6 +218,7 @@ return new class extends Component
                 's_id' => $this->s_id,
                 'r_id' => $this->r_id,
                 'u_id' => $this->u_id,
+                'phone' => $this->phone,
             ]);
 
             if ($user = $person->user) {
@@ -179,6 +234,8 @@ return new class extends Component
 
     public function editPerson($id): void
     {
+        $this->authorize('manage_personnel');
+
         $this->resetValidation();
         $person = PersonModel::findOrFail($id);
 
@@ -199,6 +256,7 @@ return new class extends Component
         $this->s_id = $person->s_id;
         $this->r_id = $person->r_id;
         $this->u_id = $person->u_id;
+        $this->phone = $person->phone;
         $this->formOpen = true;
         $this->unitModal = false;
     }
@@ -229,22 +287,23 @@ return new class extends Component
             ->withAggregate('unit', 'name');
 
         if (! empty($this->search)) {
-            // normalizeForQuery normalizes Persian/Arabic chars + escapes LIKE wildcards.
-            $search = PersianNormalizer::normalizeForQuery($this->search);
-
+            // Fold both the column and the term for Persian char equivalence.
             // Each whitespace-separated term must match (AND); within a term,
-            // any of n_code / "first last" / "last first" / unit name counts,
-            // so "عسگری مهدی" finds «مهدی عسگری» too (#494).
-            $terms = array_values(array_filter(explode(' ', $search), fn ($t) => $t !== ''));
+            // any of n_code / "first last" / "last first" / unit name counts.
+            $terms = array_values(array_filter(explode(' ', PersianNormalizer::normalizeForSearch($this->search)), fn ($t) => $t !== ''));
 
             $query->where(function ($q) use ($terms) {
                 foreach ($terms as $term) {
-                    $q->where(function ($tq) use ($term) {
-                        $tq->where('n_code', 'LIKE', '%'.$term.'%')
-                            ->orWhereRaw("CONCAT(f_name, ' ', l_name) LIKE ?", ["%{$term}%"])
-                            ->orWhereRaw("CONCAT(l_name, ' ', f_name) LIKE ?", ["%{$term}%"])
-                            ->orWhereHas('unit', function ($uq) use ($term) {
-                                $uq->where('name', 'LIKE', "%{$term}%");
+                    $foldedTerm = PersianNormalizer::foldedTerm($term);
+                    $q->where(function ($tq) use ($foldedTerm) {
+                        // n_code is numeric only - keep raw LIKE
+                        $tq->where('n_code', 'LIKE', "%{$foldedTerm}%")
+                            // Fold CONCAT columns for Persian equivalence
+                            ->orWhereRaw(PersianNormalizer::foldSeparatorsSql("CONCAT(f_name, ' ', l_name)").' LIKE ?', ["%{$foldedTerm}%"])
+                            ->orWhereRaw(PersianNormalizer::foldSeparatorsSql("CONCAT(l_name, ' ', f_name)").' LIKE ?', ["%{$foldedTerm}%"])
+                            // Fold unit name column
+                            ->orWhereHas('unit', function ($uq) use ($foldedTerm) {
+                                $uq->whereRaw(PersianNormalizer::foldSeparatorsSql('name').' LIKE ?', ["%{$foldedTerm}%"]);
                             });
                     });
                 }
@@ -308,6 +367,7 @@ return new class extends Component
             'units' => $units,
             'selectedUnitName' => $selectedUnitName,
             'filterUnitName' => $filterUnitName,
+            'exportUrl' => route('kargozini.persons.export', $this->exportQuery()),
         ];
     }
 };
@@ -325,7 +385,18 @@ return new class extends Component
 
     <x-card shadow>
         <div class="flex gap-2 items-center mb-4">
-            <x-button class="btn-success" wire:click="startCreate" icon="o-plus"/>
+            {{-- #805: the page opens on the READ union `kargozini|manage_personnel`,
+                 so the create button is wrapped in the write permission — a
+                 read-only user must not be shown a control that only 403s. --}}
+            @can('manage_personnel')
+                <x-button class="btn-success" wire:click="startCreate" icon="o-plus"/>
+            @endcan
+            <a href="{{ $exportUrl }}"
+               class="btn btn-outline btn-sm"
+               title="خروجی اکسل پرسنل در دسترس با فیلترهای فعال">
+                <x-icon name="o-arrow-down-tray" class="w-5 h-5"/>
+                <span class="hidden 2xl:inline">خروجی اکسل</span>
+            </a>
             <div class="flex-1">
                 <x-input
                     placeholder="جستجو..."
@@ -393,6 +464,7 @@ return new class extends Component
                     <x-select wire:model="e_id" label="استخدام" :options="$estekhdams" required placeholder="انتخاب نوع استخدام"/>
                     <x-select wire:model="s_id" label="سمت" :options="$semats" required placeholder="انتخاب سمت"/>
                     <x-select wire:model="r_id" label="ردیف سازمانی" :options="$radifs" required placeholder="انتخاب ردیف سازمانی"/>
+                    <x-input wire:model="phone" label="شماره تماس" placeholder="شماره تماس" maxlength="20"/>
 
                     <div class="sm:col-span-2">
                         <label class="text-sm font-medium block mb-1">واحد</label>
@@ -424,16 +496,20 @@ return new class extends Component
         <x-table :headers="$headers" :rows="$persons" :sort-by="$sortBy" with-pagination per-page="perPage"
                  :per-page-values="[10, 20, 50]">
             @scope('actions', $person)
-                <div class="flex w-1/12">
-                    <x-button icon="o-pencil"
-                              wire:click="editPerson({{ $person->id }})"
-                              class="btn-ghost btn-sm text-primary" />
-                    <x-button icon="o-trash"
-                              wire:click="delete({{ $person->id }})"
-                              wire:confirm="آیا مطمئن هستید"
-                              spinner
-                              class="btn-ghost btn-sm text-error" />
-                </div>
+                {{-- #805: edit/delete are writes; hide them from a `kargozini`-only
+                     reader instead of rendering buttons that 403 on click. --}}
+                @can('manage_personnel')
+                    <div class="flex w-1/12">
+                        <x-button icon="o-pencil"
+                                  wire:click="editPerson({{ $person->id }})"
+                                  class="btn-ghost btn-sm text-primary" />
+                        <x-button icon="o-trash"
+                                  wire:click="delete({{ $person->id }})"
+                                  wire:confirm="آیا مطمئن هستید"
+                                  spinner
+                                  class="btn-ghost btn-sm text-error" />
+                    </div>
+                @endcan
             @endscope
         </x-table>
     </x-card>

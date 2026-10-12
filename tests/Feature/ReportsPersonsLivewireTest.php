@@ -9,50 +9,21 @@ use App\Services\AccessService;
 use Database\Seeders\PermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Livewire;
+use Tests\Support\Concerns\InteractsWithTestSetup;
 use Tests\TestCase;
 
 class ReportsPersonsLivewireTest extends TestCase
 {
+    use InteractsWithTestSetup;
     use RefreshDatabase;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->seed(PermissionSeeder::class);
-
-        DB::table('tahsils')->insert(['id' => 1, 'name' => 'Test']);
-        DB::table('estekhdams')->insert(['id' => 1, 'name' => 'Test']);
-        DB::table('semats')->insert(['id' => 1, 'name' => 'Test']);
-        DB::table('radifs')->insert(['id' => 1, 'name' => 'Test']);
-
-        // Resync sequences so later auto-incremented inserts don't collide
-        DB::select("SELECT setval('tahsils_id_seq', GREATEST(COALESCE((SELECT MAX(id) FROM tahsils), 1), 1))");
-        DB::select("SELECT setval('estekhdams_id_seq', GREATEST(COALESCE((SELECT MAX(id) FROM estekhdams), 1), 1))");
-        DB::select("SELECT setval('semats_id_seq', GREATEST(COALESCE((SELECT MAX(id) FROM semats), 1), 1))");
-        DB::select("SELECT setval('radifs_id_seq', GREATEST(COALESCE((SELECT MAX(id) FROM radifs), 1), 1))");
-        DB::select("SELECT setval('units_id_seq', GREATEST(COALESCE((SELECT MAX(id) FROM units), 1), 1))");
-        DB::select("SELECT setval('persons_id_seq', GREATEST(COALESCE((SELECT MAX(id) FROM persons), 1), 1))");
-    }
-
-    protected function createUserWithUnit(string $permission = ''): User
-    {
-        $unit = Unit::create(['name' => 'واحد تست']);
-        $nCode = (string) fake()->unique()->numerify('##########');
-        Person::create([
-            'n_code' => $nCode, 'f_name' => 'تست', 'l_name' => 'کاربر',
-            't_id' => 1, 'e_id' => 1, 's_id' => 1, 'r_id' => 1, 'u_id' => $unit->id,
-        ]);
-        $user = User::create(['n_code' => $nCode, 'password' => Hash::make('password')]);
-        $user->units()->attach($unit->id, ['role' => 'staff', 'is_primary' => true]);
-
-        if ($permission) {
-            $user->givePermissionTo($permission);
-        }
-
-        return $user;
+        $this->seedLookupTables();
     }
 
     protected function actingWithUnit(User $user): void
@@ -99,7 +70,7 @@ class ReportsPersonsLivewireTest extends TestCase
 
     public function test_renders_stats(): void
     {
-        $user = $this->createUserWithUnit();
+        ['user' => $user, 'unit' => $unit] = $this->createUserWithUnit();
         $this->actingWithUnit($user);
 
         Livewire::test('reports.persons')
@@ -112,17 +83,16 @@ class ReportsPersonsLivewireTest extends TestCase
 
     public function test_counts_match(): void
     {
-        $user = $this->createUserWithUnit();
+        ['user' => $user, 'unit' => $unit] = $this->createUserWithUnit();
         $this->actingWithUnit($user);
-        $unit = $user->units()->first();
 
-        // Seed 2 more persons into this unit (setUp already created 1 via createUserWithUnit)
+        // Seed 2 more persons into this unit (createUserWithUnit already created 1)
         $this->createPersonInUnit($unit, 'علی', 'اول');
         $this->createPersonInUnit($unit, 'رضا', 'دوم');
 
-        // Total: setUp person + ali + reza = 3
+        // Total: createUserWithUnit person + ali + reza = 3
         Livewire::test('reports.persons')
-            ->assertSee('تست')     // setUp person's f_name
+            ->assertSee($user->person->f_name) // createUserWithUnit person's actual (factory) name
             ->assertSee('علی')    // ali
             ->assertSee('رضا')    // reza
             ->assertSeeHtml('3');  // total count displayed in stat card
@@ -164,10 +134,12 @@ class ReportsPersonsLivewireTest extends TestCase
 
     // ==================== Edge cases ====================
 
-    public function test_empty_accessible_ids_renders_without_error(): void
+    public function test_empty_accessible_ids_scopes_to_zero_rows(): void
     {
         // Person with null u_id, user with no units → accessibleUnitIds = []
-        // Component should render without error (no filter applied)
+        // Issue #819: an empty scope must FAIL CLOSED — the roster is scoped to
+        // nothing, so an out-of-scope person's n_code never renders. This used
+        // to assert only assertStatus(200), which passed *because* of the leak.
         $nCode = (string) fake()->unique()->numerify('##########');
         Person::create([
             'n_code' => $nCode, 'f_name' => 'بدون واحد', 'l_name' => 'تست',
@@ -175,10 +147,24 @@ class ReportsPersonsLivewireTest extends TestCase
         ]);
         $user = User::create(['n_code' => $nCode, 'password' => Hash::make('password')]);
 
+        // A whole other unit's person, which an empty-scope viewer must not see.
+        $outside = Unit::create(['name' => 'خارج']);
+        $foreignNCode = (string) fake()->unique()->numerify('##########');
+        Person::create([
+            'n_code' => $foreignNCode, 'f_name' => 'خارجی', 'l_name' => 'کاربر',
+            't_id' => 1, 'e_id' => 1, 's_id' => 1, 'r_id' => 1, 'u_id' => $outside->id,
+        ]);
+
         $this->actingAs($user);
 
-        Livewire::test('reports.persons')
-            ->assertStatus(200);
+        $this->assertSame([], app(AccessService::class)->accessibleUnitIds(), 'the fixture must really be an empty scope');
+
+        $component = Livewire::test('reports.persons')->assertStatus(200);
+
+        $component->assertDontSee($foreignNCode)
+            ->assertDontSee('خارجی');
+
+        $this->assertSame(0, $component->instance()->chartPayload()['total']);
     }
 
     public function test_zero_persons_shows_empty_table(): void

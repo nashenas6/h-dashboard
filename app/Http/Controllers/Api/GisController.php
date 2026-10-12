@@ -8,11 +8,14 @@ use App\Models\Hardware;
 use App\Models\Ticket;
 use App\Models\Unit;
 use App\Services\CacheInvalidationServiceInterface;
+use App\Traits\PersianNormalizer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
 
 class GisController extends Controller
 {
+    use PersianNormalizer;
+
     public function __construct(
         protected CacheInvalidationServiceInterface $cache
     ) {}
@@ -88,13 +91,19 @@ class GisController extends Controller
 
     /**
      * Build a cache key for GIS endpoints via the unified service.
+     * Uses the shared 'gis' namespace (incremented on hardware/person changes)
+     * and includes the endpoint in extra data for per-endpoint separation.
+     * Sorts accessibleIds to ensure consistent cache keys regardless of DB result order.
      */
     protected function gisCacheKey(string $endpoint, array $accessibleIds, string $bbox, array $extra = []): string
     {
-        $scopeHash = md5(implode(',', $accessibleIds));
-        $extraHash = empty($extra) ? 'none' : md5(serialize($extra));
+        $idStrings = array_map('strval', $accessibleIds);
+        sort($idStrings, SORT_STRING);
+        $scopeHash = md5(implode(',', $idStrings));
+        $extra = array_merge(['endpoint' => $endpoint], $extra);
+        $extraHash = md5(serialize($extra));
 
-        return $this->cache->cacheKey("gis_{$endpoint}", $scopeHash, "{$bbox}:{$extraHash}");
+        return $this->cache->cacheKey('gis', $scopeHash, "{$bbox}:{$extraHash}");
     }
 
     /**
@@ -188,7 +197,8 @@ class GisController extends Controller
             $this->applyBboxAliased($query, $request);
 
             if ($request->filled('type')) {
-                $query->where('hardwares.type', 'LIKE', "%{$request->type}%");
+                $type = self::normalizeForQuery($request->type);
+                $query->where('hardwares.type', 'LIKE', "%{$type}%");
             }
             if ($request->filled('shutdown')) {
                 $query->where('hardwares.shutdown', $request->boolean('shutdown'));
@@ -412,13 +422,5 @@ class GisController extends Controller
             'type' => 'FeatureCollection',
             'features' => $features,
         ]);
-    }
-
-    /**
-     * Invalidate GIS cache by bumping the version counter via the unified service.
-     */
-    public static function invalidateCache(): void
-    {
-        app(CacheInvalidationServiceInterface::class)->increment('gis');
     }
 }

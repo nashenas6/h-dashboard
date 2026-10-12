@@ -2,7 +2,10 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -16,6 +19,19 @@ use Spatie\Permission\Traits\HasRoles;
  * @property int $id
  * @property string $n_code
  * @property string $password
+ * @property Carbon|null $email_verified_at
+ * @property array<string, mixed> $settings
+ * @property string|null $remember_token
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ * @property-read string $name
+ * @property-read string $unit_name
+ * @property-read Person|null $person
+ * @property-read Unit|null $unit
+ * @property-read Collection<int, Unit> $units
+ *
+ * @method static Builder<static> where(string $column, mixed $value)
  */
 class User extends Authenticatable
 {
@@ -63,11 +79,8 @@ class User extends Authenticatable
 
                 // اول از session بخوان
                 if (($cached = session($sessionKey)) !== null) {
-                    //                    \Log::info("[SESSION] Hit for user {$this->id}");
                     return $cached;
                 }
-
-                //                \Log::info("[DB] Loading person for user {$this->id}");
 
                 // دیتابیس — فقط اولین بار بعد از لاگین
                 $person = $this->relationLoaded('person')
@@ -110,4 +123,63 @@ class User extends Authenticatable
 
     protected $hidden = ['password',
         'settings', 'remember_token'];
+
+    /**
+     * Derive API token abilities from the user's Spatie permissions.
+     *
+     * Maps each permission to its corresponding API ability(ies).
+     * Admins (who have all permissions via RoleSeeder) get the full set.
+     *
+     * @return array<int, string>
+     */
+    public function getApiTokenAbilities(): array
+    {
+        $abilities = ['notifications:read'];
+
+        if ($this->hasPermissionTo('organization')) {
+            $abilities[] = 'units:read';
+            $abilities[] = 'units:write';
+        }
+
+        if ($this->hasPermissionTo('manage_hardware')) {
+            $abilities[] = 'hardware:read';
+            $abilities[] = 'hardware:write';
+        }
+
+        if ($this->hasAnyPermission(['view_assigned_tickets', 'view_all_tickets'])) {
+            $abilities[] = 'tickets:read';
+        }
+
+        if ($this->hasPermissionTo('create_ticket')) {
+            $abilities[] = 'tickets:write';
+        }
+
+        if ($this->hasAnyPermission(['kargozini', 'manage_personnel'])) {
+            $abilities[] = 'persons:read';
+        }
+
+        if ($this->hasPermissionTo('manage_personnel')) {
+            $abilities[] = 'persons:write';
+        }
+
+        if ($this->hasPermissionTo('calendar')) {
+            $abilities[] = 'todos:read';
+            $abilities[] = 'todos:write';
+        }
+
+        if ($this->hasPermissionTo('view_hr_dashboard')) {
+            $abilities[] = 'hr:read';
+        }
+
+        if ($this->hasAnyPermission(['map', 'bw'])) {
+            $abilities[] = 'traffic:read';
+            $abilities[] = 'gis:read';
+        }
+
+        if ($this->hasPermissionTo('manage_personnel')) {
+            $abilities[] = 'reports:read';
+        }
+
+        return $abilities;
+    }
 }

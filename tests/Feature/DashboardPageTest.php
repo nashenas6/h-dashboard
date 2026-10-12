@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\Person;
-use App\Models\Ticket;
 use App\Models\Unit;
 use App\Models\User;
 use Database\Seeders\PermissionSeeder;
@@ -10,8 +9,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Livewire;
 use Tests\TestCase;
-
-covers(Ticket::class);
 
 uses(TestCase::class, RefreshDatabase::class);
 
@@ -48,6 +45,33 @@ test('guest is redirected from dashboard', function () {
 test('authenticated user can load dashboard', function () {
     $this->actingAs($this->user);
     $this->get('/dashboard')->assertStatus(200);
+});
+
+test('user without accessible unit gets zero stats, not 500', function () {
+    $orphan = User::factory()->create([
+        'n_code' => '0000000000',
+        'password' => Hash::make('password'),
+    ]);
+    Person::where('n_code', '0000000000')->update(['u_id' => null]);
+
+    $this->actingAs($orphan);
+    $this->get('/dashboard')->assertStatus(200);
+});
+
+test('dashboard shows empty-scope message when no unit is accessible', function () {
+    $orphan = User::factory()->create([
+        'n_code' => '0000000000',
+        'password' => Hash::make('password'),
+    ]);
+    Person::where('n_code', '0000000000')->update(['u_id' => null]);
+
+    $this->actingAs($orphan);
+
+    Livewire::test('dashboard')
+        ->assertStatus(200)
+        ->assertSee('واحدی برای نمایش انتخاب نشده')
+        ->assertSet('totalPersons', 0)
+        ->assertSet('totalTickets', 0);
 });
 
 test('dashboard renders expected sections', function () {

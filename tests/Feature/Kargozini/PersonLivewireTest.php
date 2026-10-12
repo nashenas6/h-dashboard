@@ -6,6 +6,7 @@ use App\Models\Person;
 use App\Models\Person as PersonModel;
 use App\Models\Unit;
 use App\Models\User;
+use Database\Seeders\PermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -63,6 +64,37 @@ class PersonLivewireTest extends TestCase
         $this->user->units()->attach($this->unit->id, ['role' => 'staff', 'is_primary' => true]);
         Session::put('current_unit_id', $this->unit->id);
         $this->actingAs($this->user);
+
+        // #805: every mutating method in this component calls
+        // authorize('manage_personnel'), so the default persona of this
+        // suite — the "writes personnel" user — must hold it. The
+        // kargozini-only (read-only) persona is built per test by
+        // actingAsKargoziniOnlyUser().
+        $this->seed(PermissionSeeder::class);
+        $this->user->givePermissionTo('manage_personnel');
+    }
+
+    /**
+     * Swap the acting user for one that holds ONLY `kargozini` — the
+     * lookup-table permission that opens the read union — while attached
+     * to the same unit as $this->unit, so organizational scope is NOT what
+     * refuses the write.
+     */
+    protected function actingAsKargoziniOnlyUser(): User
+    {
+        $nCode = (string) fake()->unique()->numerify('##########');
+        PersonModel::create([
+            'n_code' => $nCode, 'f_name' => 'فقط', 'l_name' => 'خواندنی',
+            't_id' => $this->tId, 'e_id' => $this->eId, 's_id' => $this->sId, 'r_id' => $this->rId,
+            'u_id' => $this->unit->id,
+        ]);
+        $reader = User::create(['n_code' => $nCode, 'password' => Hash::make('password')]);
+        $reader->units()->attach($this->unit->id, ['role' => 'staff', 'is_primary' => true]);
+        $reader->givePermissionTo('kargozini');
+        Session::put('current_unit_id', $this->unit->id);
+        $this->actingAs($reader);
+
+        return $reader;
     }
 
     /**
@@ -389,5 +421,218 @@ class PersonLivewireTest extends TestCase
         $this->assertTrue(
             $linkedUser->units()->where('units.id', $this->unit->id)->exists()
         );
+    }
+
+    // -----------------------------------------------------------
+    //  شماره تماس (#738)
+    // -----------------------------------------------------------
+
+    public function test_save_person_stores_the_phone(): void
+    {
+        $data = $this->personData();
+
+        $component = Livewire::test('kargozini.person');
+        $this->fillForm($component, $data)->set('phone', '09123456789');
+        $component->call('savePerson');
+
+        $this->assertDatabaseHas('persons', [
+            'n_code' => $data['n_code'], 'phone' => '09123456789',
+        ]);
+    }
+
+    public function test_edit_form_fills_the_saved_phone(): void
+    {
+        // «نمایش» (#738): the edit form is where this page shows a record's
+        // saved details, so editPerson() must load the phone into the form.
+        $person = PersonModel::where('u_id', $this->unit->id)->firstOrFail();
+        $person->update(['phone' => '02188776655']);
+
+        Livewire::test('kargozini.person')
+            ->call('editPerson', $person->id)
+            ->assertSet('phone', '02188776655');
+    }
+
+    public function test_save_person_validates_the_phone_max_length(): void
+    {
+        // Free text, but the column and the decided rule both cap at 20 (#738).
+        $data = $this->personData();
+
+        $component = Livewire::test('kargozini.person');
+        $this->fillForm($component, $data)->set('phone', str_repeat('9', 21));
+        $component->call('savePerson')->assertHasErrors(['phone' => 'max']);
+
+        $this->assertDatabaseMissing('persons', ['n_code' => $data['n_code']]);
+    }
+
+    public function test_search_folds_zwj_in_stored_name(): void
+    {
+        // Stored name contains ZWNJ (U+200C): "حرفه\u{200C}ای"
+        // User searches "حرفه ای" (space) — both column and term are folded.
+        $nCode = (string) fake()->unique()->numerify('##########');
+        $person = PersonModel::create([
+            'n_code' => $nCode,
+            'f_name' => 'مهدی',
+            'l_name' => "حرفه\u{200C}ای", // ZWNJ in last name (double quotes for Unicode escape)
+            't_id' => $this->tId,
+            'e_id' => $this->eId,
+            's_id' => $this->sId,
+            'r_id' => $this->rId,
+            'u_id' => $this->unit->id,
+        ]);
+        $person->refresh();
+
+        Livewire::test('kargozini.person')
+            ->set('search', 'حرفه ای')
+            ->assertViewHas('persons', fn ($p) => $p->count() === 1);
+    }
+
+    public function test_search_folds_arabic_alef_in_stored_name(): void
+    {
+        // Stored name contains Arabic alef-madda (U+0622): "آموزش"
+        // User searches "اموزش" (plain alef) — both column and term are folded.
+        $nCode = (string) fake()->unique()->numerify('##########');
+        PersonModel::create([
+            'n_code' => $nCode,
+            'f_name' => 'آموزش',
+            'l_name' => 'کاربر',
+            't_id' => $this->tId,
+            'e_id' => $this->eId,
+            's_id' => $this->sId,
+            'r_id' => $this->rId,
+            'u_id' => $this->unit->id,
+        ]);
+
+        Livewire::test('kargozini.person')
+            ->set('search', 'اموزش')
+            ->assertViewHas('persons', fn ($p) => $p->count() === 1);
+    }
+
+    public function test_search_folds_persian_digits_in_stored_name(): void
+    {
+        // Stored n_code uses Latin digits, but we also test Persian digits in name columns.
+        // A user types Persian digits; term is folded, column is folded.
+        $nCode = (string) fake()->unique()->numerify('##########');
+        PersonModel::create([
+            'n_code' => $nCode,
+            'f_name' => 'تست۴۵', // Persian digits in first name
+            'l_name' => 'کاربر',
+            't_id' => $this->tId,
+            'e_id' => $this->eId,
+            's_id' => $this->sId,
+            'r_id' => $this->rId,
+            'u_id' => $this->unit->id,
+        ]);
+
+        Livewire::test('kargozini.person')
+            ->set('search', 'تست45') // Latin digits in search
+            ->assertViewHas('persons', fn ($p) => $p->count() === 1);
+    }
+
+    // -----------------------------------------------------------
+    //  گیت نوشتن `manage_personnel` (#805)
+    // -----------------------------------------------------------
+
+    public function test_kargozini_only_user_is_refused_create(): void
+    {
+        // The read union `kargozini|manage_personnel` opens this page, but
+        // #775 decided writes are `manage_personnel` only — the API refuses
+        // the same operation, so the UI must refuse it too (#805).
+        $this->actingAsKargoziniOnlyUser();
+        $data = $this->personData();
+
+        $component = Livewire::test('kargozini.person');
+        $this->fillForm($component, $data);
+        $component->call('savePerson')->assertForbidden();
+
+        $this->assertDatabaseMissing('persons', ['n_code' => $data['n_code']]);
+    }
+
+    public function test_kargozini_only_user_is_refused_update(): void
+    {
+        $this->actingAsKargoziniOnlyUser();
+        $person = PersonModel::where('u_id', $this->unit->id)
+            ->where('f_name', 'مهدی')
+            ->firstOrFail();
+
+        Livewire::test('kargozini.person')
+            ->call('editPerson', $person->id)
+            ->assertForbidden();
+
+        $this->assertDatabaseHas('persons', ['id' => $person->id, 'f_name' => 'مهدی']);
+    }
+
+    public function test_kargozini_only_user_is_refused_delete(): void
+    {
+        $this->actingAsKargoziniOnlyUser();
+        $fresh = PersonModel::create($this->personData());
+
+        Livewire::test('kargozini.person')
+            ->call('delete', $fresh)
+            ->assertForbidden();
+
+        $this->assertDatabaseHas('persons', ['id' => $fresh->id]);
+    }
+
+    public function test_kargozini_only_user_is_refused_the_create_form(): void
+    {
+        // startCreate() opens the write form. A read-only user must not even
+        // get the form, so a `kargozini`-only session sees no button that
+        // can only fail.
+        $this->actingAsKargoziniOnlyUser();
+
+        Livewire::test('kargozini.person')
+            ->call('startCreate')
+            ->assertForbidden()
+            ->assertSet('formOpen', false);
+    }
+
+    public function test_kargozini_only_user_sees_no_write_controls(): void
+    {
+        $this->actingAsKargoziniOnlyUser();
+
+        Livewire::test('kargozini.person')
+            ->assertOk()
+            ->assertDontSeeHtml('wire:click="startCreate"')
+            ->assertDontSeeHtml('wire:click="editPerson(')
+            ->assertDontSeeHtml('wire:click="delete(');
+    }
+
+    public function test_write_controls_are_visible_for_manage_personnel_holder(): void
+    {
+        // The mirror of the test above: the gate must not hide the page from
+        // the user who is allowed to write.
+        Livewire::test('kargozini.person')
+            ->assertOk()
+            ->assertSeeHtml('wire:click="startCreate"')
+            ->assertSeeHtml('wire:click="editPerson(')
+            ->assertSeeHtml('wire:click="delete(');
+    }
+
+    public function test_update_rejects_a_u_id_outside_the_accessible_units(): void
+    {
+        // The pre-update scope check validates the STORED u_id only, so the
+        // submitted value used to rewrite it — moving the record into a unit
+        // the actor never had read access to (#805).
+        $person = PersonModel::where('u_id', $this->unit->id)
+            ->where('f_name', 'مهدی')
+            ->firstOrFail();
+
+        Livewire::test('kargozini.person')
+            ->set('editingId', $person->id)
+            ->set('n_code', $person->n_code)
+            ->set('f_name', 'جابه‌جا')
+            ->set('l_name', 'شده')
+            ->set('t_id', $this->tId)
+            ->set('e_id', $this->eId)
+            ->set('s_id', $this->sId)
+            ->set('r_id', $this->rId)
+            ->set('u_id', $this->otherUnit->id) // outside the actor's subtree
+            ->call('savePerson');
+
+        $this->assertDatabaseHas('persons', [
+            'id' => $person->id,
+            'u_id' => $this->unit->id, // not moved
+            'f_name' => 'مهدی',        // and not edited either
+        ]);
     }
 }

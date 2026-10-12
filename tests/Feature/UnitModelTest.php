@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Person;
 use App\Models\Unit;
+use App\Models\UnitType;
 use App\Models\User;
 use Database\Seeders\PermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -139,6 +140,35 @@ class UnitModelTest extends TestCase
         $this->assertEquals($result1->toArray(), $result2->toArray());
     }
 
+    public function test_ancestor_ids_cache_key_independent_of_input_order(): void
+    {
+        $unit = Unit::create(['name' => 'واحد']);
+        $parent = Unit::create(['name' => 'والد', 'parent_id' => $unit->id]);
+        $child = Unit::create(['name' => 'فرزند', 'parent_id' => $parent->id]);
+        $grandchild = Unit::create(['name' => 'نوه', 'parent_id' => $child->id]);
+
+        Cache::put('unit_hierarchy_version', 0);
+
+        // Use three IDs where sort order differs from both input orders
+        $ids1 = [$grandchild->id, $parent->id, $child->id];
+        $ids2 = [$child->id, $grandchild->id, $parent->id];
+
+        // First call with one order - populates cache (runs CTE query)
+        $result1 = Unit::ancestorIds($ids1);
+
+        // Second call with different order - should hit cache, no new CTE query
+        DB::enableQueryLog();
+        $result2 = Unit::ancestorIds($ids2);
+        $queries = DB::getQueryLog();
+
+        // Results should be identical
+        $this->assertEqualsCanonicalizing($result1->toArray(), $result2->toArray());
+
+        // Filter to only CTE queries (ancestor JOIN query)
+        $cteQueries = array_filter($queries, fn ($q) => str_contains($q['query'] ?? '', 'INNER JOIN units parent'));
+        $this->assertCount(0, $cteQueries, 'No new CTE query should run for different input order');
+    }
+
     // --- descendantIds ---
 
     public function test_descendant_ids_returns_all_descendants(): void
@@ -173,6 +203,81 @@ class UnitModelTest extends TestCase
         $this->assertTrue($result->isEmpty());
     }
 
+    public function test_descendant_ids_terminates_on_a_parent_id_cycle(): void
+    {
+        // parent_id is not constrained by the database, so a cycle is possible
+        // via direct writes, seeders, or a bad type-relationship edit. The
+        // recursive CTE must dedupe (UNION, not UNION ALL) or it recurses
+        // forever and takes the connection with it.
+        $this->withStatementTimeout(10000, function () {
+            $a = Unit::create(['name' => 'الف', 'is_active' => true]);
+            $b = Unit::create(['name' => 'ب', 'is_active' => true, 'parent_id' => $a->id]);
+            $a->update(['parent_id' => $b->id]);
+
+            $descendants = Unit::descendantIds($a->id);
+
+            // Terminated, and did not loop: each unit appears exactly once.
+            $this->assertCount(2, $descendants);
+            $this->assertEqualsCanonicalizing(
+                [$a->id, $b->id],
+                $descendants->unique()->values()->all()
+            );
+        });
+    }
+
+    public function test_descendant_ids_terminates_on_a_longer_cycle(): void
+    {
+        $this->withStatementTimeout(10000, function () {
+            $a = Unit::create(['name' => 'الف', 'is_active' => true]);
+            $b = Unit::create(['name' => 'ب', 'is_active' => true, 'parent_id' => $a->id]);
+            $c = Unit::create(['name' => 'ج', 'is_active' => true, 'parent_id' => $b->id]);
+            $d = Unit::create(['name' => 'د', 'is_active' => true, 'parent_id' => $c->id]);
+            $a->update(['parent_id' => $d->id]);
+
+            $this->assertCount(4, Unit::descendantIds($a->id));
+        });
+    }
+
+    public function test_descendant_ids_still_terminates_on_an_inactive_node_in_a_cycle(): void
+    {
+        // The recursive step filters is_active = true, so an inactive unit is
+        // never traversed: a cycle through one already terminated even with
+        // UNION ALL. Pinned here so the UNION change cannot silently alter it —
+        // the inactive unit is EXCLUDED from the result, not included.
+        $this->withStatementTimeout(10000, function () {
+            $a = Unit::create(['name' => 'الف', 'is_active' => true]);
+            $b = Unit::create(['name' => 'ب', 'is_active' => false, 'parent_id' => $a->id]);
+            $a->update(['parent_id' => $b->id]);
+
+            $descendants = Unit::descendantIds($a->id);
+
+            $this->assertCount(1, $descendants);
+            $this->assertSame($a->id, $descendants->first());
+        });
+    }
+
+    /**
+     * Run a callback under a Postgres statement_timeout, so a non-terminating
+     * recursive query fails fast instead of hanging the whole suite.
+     *
+     * The budget is deliberately generous (10s) relative to the ~2ms query it
+     * guards. The point is to catch a UNION ALL regression — which on a cycle
+     * is infinite, so any seconds-long deadline stops it — NOT to measure
+     * speed. A tight deadline turned a loaded machine (PHPStan and Pest on the
+     * same cores) into flaky failures that looked like flakiness, not a budget
+     * problem, and re-running always went green (issue #739).
+     *
+     * The timeout is NOT reset afterwards: a timed-out statement aborts the
+     * test's transaction, so any reset would raise a second, misleading error.
+     * RefreshDatabase rolls the connection back between tests.
+     */
+    protected function withStatementTimeout(int $milliseconds, callable $callback): void
+    {
+        DB::statement("SET statement_timeout = {$milliseconds}");
+
+        $callback();
+    }
+
     public function test_descendant_ids_caches_results(): void
     {
         $parent = Unit::create(['name' => 'والد']);
@@ -184,6 +289,34 @@ class UnitModelTest extends TestCase
         $result2 = Unit::descendantIds([$parent->id]);
 
         $this->assertEquals($result1->toArray(), $result2->toArray());
+    }
+
+    public function test_descendant_ids_cache_key_independent_of_input_order(): void
+    {
+        $parent = Unit::create(['name' => 'والد']);
+        $child1 = Unit::create(['name' => 'فرزند ۱', 'parent_id' => $parent->id]);
+        $child2 = Unit::create(['name' => 'فرزند ۲', 'parent_id' => $parent->id]);
+
+        Cache::put('unit_hierarchy_version', 0);
+
+        // Use three IDs where sort order differs from both input orders
+        $ids1 = [$child1->id, $child2->id, $parent->id];
+        $ids2 = [$parent->id, $child2->id, $child1->id];
+
+        // First call with one order - populates cache (runs CTE query)
+        $result1 = Unit::descendantIds($ids1);
+
+        // Second call with different order - should hit cache, no new CTE query
+        DB::enableQueryLog();
+        $result2 = Unit::descendantIds($ids2);
+        $queries = DB::getQueryLog();
+
+        // Results should be identical
+        $this->assertEqualsCanonicalizing($result1->toArray(), $result2->toArray());
+
+        // Filter to only CTE queries (descendant recursive CTE query)
+        $cteQueries = array_filter($queries, fn ($q) => str_contains($q['query'] ?? '', 'WITH RECURSIVE unit_tree'));
+        $this->assertCount(0, $cteQueries, 'No new CTE query should run for different input order');
     }
 
     // --- withinBounds scope ---
@@ -229,17 +362,64 @@ class UnitModelTest extends TestCase
         $this->assertEquals(51.5, $unit->lng);
     }
 
-    // --- childrenRecursive ---
+    // --- buildTree ---
 
-    public function test_children_recursive_eager_loads_hierarchy(): void
+    public function test_build_tree_returns_nested_hierarchy(): void
     {
         $parent = Unit::create(['name' => 'والد']);
         $child = Unit::create(['name' => 'فرزند', 'parent_id' => $parent->id]);
         $grandchild = Unit::create(['name' => 'نوه', 'parent_id' => $child->id]);
 
-        $loaded = Unit::with('childrenRecursive')->find($parent->id);
+        $roots = Unit::buildTree([$parent->id]);
 
-        $this->assertCount(1, $loaded->childrenRecursive);
-        $this->assertCount(1, $loaded->childrenRecursive->first()->childrenRecursive);
+        $this->assertCount(1, $roots);
+        $this->assertEquals($parent->id, $roots->first()->id);
+        $this->assertCount(1, $roots->first()->childrenRecursive);
+        $this->assertEquals($child->id, $roots->first()->childrenRecursive->first()->id);
+        $this->assertCount(1, $roots->first()->childrenRecursive->first()->childrenRecursive);
+        $this->assertEquals($grandchild->id, $roots->first()->childrenRecursive->first()->childrenRecursive->first()->id);
+    }
+
+    public function test_build_tree_respects_accessible_ids_scope(): void
+    {
+        $parent1 = Unit::create(['name' => 'والد ۱']);
+        $child1 = Unit::create(['name' => 'فرزند ۱', 'parent_id' => $parent1->id]);
+        $parent2 = Unit::create(['name' => 'والد ۲']);
+        $child2 = Unit::create(['name' => 'فرزند ۲', 'parent_id' => $parent2->id]);
+
+        // Only parent2's subtree is accessible
+        $roots = Unit::buildTree([$parent1->id, $parent2->id], [$parent2->id, $child2->id]);
+
+        $this->assertCount(1, $roots);
+        $this->assertEquals($parent2->id, $roots->first()->id);
+        $this->assertCount(1, $roots->first()->childrenRecursive);
+    }
+
+    public function test_build_tree_with_empty_root_ids_returns_empty(): void
+    {
+        $roots = Unit::buildTree([]);
+        $this->assertCount(0, $roots);
+    }
+
+    public function test_build_tree_leaf_nodes_have_empty_children_recursive(): void
+    {
+        $parent = Unit::create(['name' => 'والد']);
+        $child = Unit::create(['name' => 'فرزند', 'parent_id' => $parent->id]);
+
+        $roots = Unit::buildTree([$parent->id]);
+
+        $this->assertCount(1, $roots->first()->childrenRecursive);
+        $this->assertCount(0, $roots->first()->childrenRecursive->first()->childrenRecursive);
+    }
+
+    public function test_build_tree_preserves_unit_type(): void
+    {
+        $unitType = UnitType::create(['name' => 'نوع تست']);
+        $parent = Unit::create(['name' => 'والد', 'unit_type_id' => $unitType->id]);
+
+        $roots = Unit::buildTree([$parent->id]);
+
+        $this->assertNotNull($roots->first()->unitType);
+        $this->assertEquals($unitType->id, $roots->first()->unitType->id);
     }
 }

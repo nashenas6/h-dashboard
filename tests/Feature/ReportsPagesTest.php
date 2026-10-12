@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Models\Boundary;
 use App\Models\Person;
-use App\Models\Ticket;
 use App\Models\Unit;
 use App\Models\User;
 use Database\Seeders\PermissionSeeder;
@@ -13,8 +12,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Livewire\Livewire;
 use Tests\TestCase;
-
-covers(Ticket::class);
 
 uses(TestCase::class, RefreshDatabase::class);
 
@@ -40,6 +37,9 @@ beforeEach(function () {
 
     $this->user = User::factory()->create(['n_code' => $this->person->n_code]);
     $this->user->givePermissionTo('manage_hardware');
+    // /reports/* is gated by `manage_personnel` (routes/web.php) — the HTTP
+    // assertion below needs that permission in addition to manage_hardware.
+    $this->user->givePermissionTo('manage_personnel');
 
     Session::put('current_unit_id', $this->unit->id);
 });
