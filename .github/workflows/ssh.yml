@@ -1,4 +1,4 @@
-name: nashenasn6
+name: Seenk
 
 on:
   schedule:
@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 360
     env:
-      WF_NAME: nashenasn6
+      WF_NAME: Seenk
 
     steps:
       - name: 2. Setup OpenSSH Server & Set Runner Password
